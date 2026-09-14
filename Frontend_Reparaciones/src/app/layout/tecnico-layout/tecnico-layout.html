@@ -1,0 +1,43 @@
+<div class="tecnico-layout">
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>🔧 Panel Técnico</h2>
+            <p>Sistema de Reparaciones</p>
+        </div>
+
+        <div class="user-info">
+            <img src="https://cdn-icons-png.flaticon.com/512/9440/9440361.png" alt="Avatar Técnico">
+            <span>{{ nombreTecnico }}</span>
+            <p>Técnico Especialista</p>
+        </div>
+
+        <nav class="nav-menu">
+            <a routerLink="/tecnico/dashboard" routerLinkActive="active">
+                <span class="icon">📊</span><span>Dashboard</span>
+            </a>
+            <a routerLink="/tecnico/ordenes-asignadas" routerLinkActive="active">
+                <span class="icon">📋</span><span>Órdenes Asignadas</span>
+            </a>
+            <a routerLink="/tecnico/evaluacion-equipos" routerLinkActive="active">
+                <span class="icon">🔍</span><span>Diagnóstico</span>
+            </a>
+            <a routerLink="/tecnico/cotizaciones" routerLinkActive="active">
+                <span class="icon">💰</span><span>Cotizaciones</span>
+            </a>
+            <a routerLink="/tecnico/reparaciones" routerLinkActive="active">
+                <span class="icon">🔧</span><span>Reparaciones</span>
+            </a>
+            <a routerLink="/tecnico/pruebas-funcionamiento" routerLinkActive="active">
+                <span class="icon">🧪</span><span>Pruebas</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" (click)="cerrarSesion()">🚪 Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

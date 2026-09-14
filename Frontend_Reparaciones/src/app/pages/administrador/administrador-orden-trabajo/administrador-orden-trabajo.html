@@ -1,0 +1,186 @@
+<div class="ordenes-page">
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="header-izquierda">
+            <h1>🔧 Órdenes de Trabajo</h1>
+            <p>Gestiona y supervisa todas las órdenes de servicio técnico</p>
+        </div>
+       <button class="btn-recargar" (click)="recargarTodo()" [disabled]="actualizando">
+    @if (actualizando) {
+        <span class="spinner-btn"></span> Actualizando...
+    } @else {
+        <span>🔄</span> Actualizar
+    }
+</button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-bar">
+        <div class="filtro-busqueda">
+            <span class="icono-busqueda">🔍</span>
+            <input type="text" placeholder="Buscar por cliente, ID, ticket, equipo o técnico..." [(ngModel)]="busquedaCliente">
+        </div>
+        <div class="filtro-botones">
+            <button [class.activo]="estadoFiltro === 'Todos'" (click)="estadoFiltro = 'Todos'">📋 Todos</button>
+            <button [class.activo]="estadoFiltro === 'PENDIENTE'" (click)="estadoFiltro = 'PENDIENTE'">⏳ Pendientes</button>
+            <button [class.activo]="estadoFiltro === 'EN_PROCESO'" (click)="estadoFiltro = 'EN_PROCESO'">⚙️ En Proceso</button>
+            <button [class.activo]="estadoFiltro === 'TERMINADO'" (click)="estadoFiltro = 'TERMINADO'">✅ Terminados</button>
+            <button [class.activo]="estadoFiltro === 'ENTREGADO'" (click)="estadoFiltro = 'ENTREGADO'">📦 Entregados</button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    @if (cargando) {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Cargando órdenes de trabajo...</p>
+        </div>
+    }
+
+    <!-- Error -->
+    @if (error && !cargando) {
+        <div class="error-container">
+            <span class="error-icon">⚠️</span>
+            <p>{{ error }}</p>
+            <button class="btn-reintentar" (click)="recargarTodo()">Reintentar</button>
+        </div>
+    }
+
+    <!-- Tabla -->
+    @if (!cargando && !error) {
+        @if (ordenesFiltradas.length === 0) {
+            <div class="empty-state">
+                <span class="empty-icon">📭</span>
+                <h3>No se encontraron órdenes</h3>
+                <p>No hay órdenes de trabajo que coincidan con los filtros</p>
+            </div>
+        } @else {
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Ticket</th>
+                            <th>Cliente</th>
+                            <th>Equipo</th>
+                            <th>Problema</th>
+                            <th>Técnico</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (orden of ordenesFiltradas; track orden.idOrden) {
+                            <tr class="orden-row">
+                                <td><span class="orden-badge">{{ orden.id }}</span></td>
+                                <td><span class="ticket-badge">{{ orden.ticket }}</span></td>
+                                <td><span class="cliente-nombre">{{ orden.cliente }}</span></td>
+                                <td>
+                                    <div class="equipo-cell">
+                                        <span class="equipo-icon">💻</span>
+                                        <span>{{ orden.marca }} {{ orden.modelo }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="problema-cell" [title]="orden.descripcion">
+                                        {{ orden.descripcion }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tecnico-cell">
+                                        <span class="tecnico-avatar">👨‍🔧</span>
+                                        <span>{{ orden.tecnico }}</span>
+                                    </div>
+                                </td>
+                                <td><span class="fecha-badge">{{ orden.fechaInicio | date:'dd/MM/yyyy' }}</span></td>
+                                <td>
+                                    <span class="estado-badge" [class.pendiente]="orden.estado === 'PENDIENTE'"
+                                          [class.proceso]="orden.estado === 'EN_PROCESO'"
+                                          [class.terminado]="orden.estado === 'TERMINADO'"
+                                          [class.entregado]="orden.estado === 'ENTREGADO'">
+                                        <span class="estado-dot"></span>
+                                        {{ getEstadoBadge(orden.estado) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="acciones-cell">
+                                        <button class="btn-editar" (click)="abrirModalEditar(orden)" title="Editar orden">
+                                            ✏️
+                                        </button>
+                                        <button class="btn-eliminar" (click)="eliminarOrden(orden)" title="Eliminar orden">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="resultados-info">
+                Mostrando {{ ordenesFiltradas.length }} de {{ ordenes.length }} órdenes
+            </div>
+        }
+    }
+
+    <!-- Modal Editar -->
+    @if (mostrarModalEditar) {
+        <div class="modal-overlay" (click)="cerrarModalEditar()">
+            <div class="modal-card" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h2>✏️ Editar {{ ordenSeleccionada.id }}</h2>
+                    <button class="btn-cerrar" (click)="cerrarModalEditar()">✕</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="info-section">
+                        <h3>📋 Información</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Cliente</span>
+                                <span class="info-valor">{{ ordenSeleccionada.cliente }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Equipo</span>
+                                <span class="info-valor">{{ ordenSeleccionada.marca }} {{ ordenSeleccionada.modelo }}</span>
+                            </div>
+                            <div class="info-item full-width">
+                                <span class="info-label">Problema</span>
+                                <span class="info-valor">{{ ordenSeleccionada.descripcion }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="edit-section">
+                        <h3>⚙️ Configuración</h3>
+                        <div class="form-group">
+                            <label>👨‍🔧 Técnico Asignado</label>
+                            <select [(ngModel)]="ordenSeleccionada.idTecnico">
+                                <option value="">No asignado</option>
+                                @for (t of tecnicos; track t.id) {
+                                    <option [value]="t.id">{{ t.nombre }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>📊 Estado</label>
+                            <select [(ngModel)]="ordenSeleccionada.estado">
+                                <option value="PENDIENTE">⏳ Pendiente</option>
+                                <option value="EN_PROCESO">⚙️ En proceso</option>
+                                <option value="TERMINADO">✅ Terminado</option>
+                                <option value="ENTREGADO">📦 Entregado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-cancelar" (click)="cerrarModalEditar()">Cancelar</button>
+                    <button class="btn-guardar" (click)="guardarCambios()">💾 Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

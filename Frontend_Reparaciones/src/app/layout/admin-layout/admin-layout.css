@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ============================================
+   LAYOUT PRINCIPAL
+   ============================================ */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.contenido {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    min-height: 100vh;
+    padding: 25px;
+    background: #f5f7fb;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #0a0f1a;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px 12px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    border-right: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #1a1f2e;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #bac1cd;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #60a5fa;
+}
+
+/* ============================================
+   LOGO
+   ============================================ */
+
+.logo {
+    text-align: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.logo h2 {
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo h2::before {
+    content: "🔧";
+    font-size: 1.2rem;
+}
+
+/* ============================================
+   PERFIL ADMIN
+   ============================================ */
+
+.admin-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+
+    padding: 10px;
+    margin-bottom: 15px;
+
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+}
+
+.admin-profile img {
+    width: 36px;
+    height: 36px;
+
+    object-fit: cover;
+    border-radius: 50%;
+
+    border: 2px solid #3b82f6;
+
+    margin-bottom: 5px;
+}
+
+.admin-profile h3 {
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.admin-profile span {
+    color: #9ca3af;
+    font-size: 0.7rem;
+    margin-top: 2px;
+}
+
+/* ============================================
+   MENÚ
+   ============================================ */
+
+.menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.menu li {
+    width: 100%;
+}
+
+.menu a {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    text-decoration: none;
+    color: #9ca3af;
+
+    border-radius: 10px;
+
+    font-size: 0.88rem;
+    font-weight: 500;
+
+    transition: all 0.25s ease;
+}
+
+.menu a:hover {
+    background: #1a253b;
+    color: #ffffff;
+    transform: translateX(4px);
+}
+
+.menu a.router-link-active,
+.menu a.active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ============================================
+   ICONOS
+   ============================================ */
+
+.icono {
+    min-width: 24px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* ============================================
+   LOGOUT
+   ============================================ */
+
+.logout {
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(59,130,246,0.2);
+}
+
+.logout a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px;
+
+    text-decoration: none;
+    color: white;
+
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+
+    border-radius: 10px;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+}
+
+.logout a:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-2px);
+}

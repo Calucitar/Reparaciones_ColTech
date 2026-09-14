@@ -1,0 +1,119 @@
+<div class="estado-page">
+  <div class="header">
+    <div>
+      <h1>📍 Estado de solicitudes</h1>
+      <p>Seguimiento en tiempo real de tus equipos</p>
+    </div>
+    <button class="btn-recargar" (click)="recargarDatos()" [disabled]="cargando">
+      {{ cargando ? '⏳ Cargando...' : '🔄 Actualizar' }}
+    </button>
+  </div>
+
+  @if (!cargando && solicitudes.length > 0) {
+    <div class="cards-resumen">
+      <div class="card-resumen" [class.activo]="estadoFiltro === ''" (click)="estadoFiltro = ''">
+        <span class="card-numero">{{ solicitudes.length }}</span>
+        <span class="card-texto">📋 Total</span>
+      </div>
+      <div class="card-resumen" [class.activo]="estadoFiltro === 'PENDIENTE'" (click)="estadoFiltro = estadoFiltro === 'PENDIENTE' ? '' : 'PENDIENTE'">
+        <span class="card-numero">{{ contarPorEstado('PENDIENTE') }}</span>
+        <span class="card-texto">⏳ Pendientes</span>
+      </div>
+      <div class="card-resumen" [class.activo]="estadoFiltro === 'EN_PROCESO'" (click)="estadoFiltro = estadoFiltro === 'EN_PROCESO' ? '' : 'EN_PROCESO'">
+        <span class="card-numero">{{ contarPorEstado('EN_PROCESO') }}</span>
+        <span class="card-texto">⚙️ En Proceso</span>
+      </div>
+      <div class="card-resumen" [class.activo]="estadoFiltro === 'TERMINADO'" (click)="estadoFiltro = estadoFiltro === 'TERMINADO' ? '' : 'TERMINADO'">
+        <span class="card-numero">{{ contarPorEstado('TERMINADO') }}</span>
+        <span class="card-texto">✅ Terminados</span>
+      </div>
+      <div class="card-resumen" [class.activo]="estadoFiltro === 'ENTREGADO'" (click)="estadoFiltro = estadoFiltro === 'ENTREGADO' ? '' : 'ENTREGADO'">
+        <span class="card-numero">{{ contarPorEstado('ENTREGADO') }}</span>
+        <span class="card-texto">📦 Entregados</span>
+      </div>
+    </div>
+  }
+
+  <div class="buscador-centrado">
+    <div class="buscador-wrapper">
+      <span class="icono-busqueda">🔍</span>
+      <input type="text" placeholder="Buscar por código, equipo, marca o modelo..." [(ngModel)]="buscador" class="input-busqueda">
+      @if (buscador) { <button class="btn-limpiar-input" (click)="buscador = ''">✕</button> }
+    </div>
+  </div>
+
+  @if (cargando) {
+    <div class="loading"><div class="spinner"></div><p>Cargando solicitudes...</p></div>
+  }
+
+  @if (!cargando && solicitudesFiltradas.length === 0) {
+    <div class="empty">
+      <div class="empty-icon">📭</div>
+      <h3>No se encontraron solicitudes</h3>
+      @if (solicitudes.length === 0) {
+        <p>Aún no has creado ninguna solicitud de reparación</p>
+        <button class="btn-reportar" routerLink="/cliente/generar-solicitud">➕ Crear solicitud</button>
+      } @else {
+        <button class="btn-limpiar-filtro" (click)="limpiarFiltros()">Mostrar todas las solicitudes</button>
+      }
+    </div>
+  }
+
+  @if (!cargando && solicitudesFiltradas.length > 0) {
+    <div class="resultados-info">
+      Mostrando <strong>{{ solicitudesFiltradas.length }}</strong> de <strong>{{ solicitudes.length }}</strong> solicitudes
+    </div>
+    
+    <div class="tabla-container">
+      <table class="tabla-solicitudes">
+        <thead>
+          <tr><th>CÓDIGO</th><th>EQUIPO</th><th>TIPO</th><th>ESTADO</th><th>FECHA</th><th>ACCIÓN</th></tr>
+        </thead>
+        <tbody>
+          @for (s of solicitudesFiltradas; track s.id) {
+            <tr>
+              <td class="codigo">{{ s.codigo }}</td>
+              <td>
+                <div class="equipo-info"><span class="equipo-marca">{{ s.marca }}</span><span class="equipo-modelo">{{ s.modelo }}</span></div>
+              </td>
+              <td><span class="badge-tipo">{{ s.tipo }}</span></td>
+              <td><span class="badge-estado" [class]="getEstadoClase(s.estado)">{{ getEstadoIcono(s.estado) }} {{ s.estado }}</span></td>
+              <td>{{ s.fecha }}</td>
+              <td><button class="btn-ver" (click)="verDetalle(s)">👁️ Ver</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (reporteSeleccionado) {
+    <div class="modal-overlay" (click)="cerrarDetalle()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>📋 {{ reporteSeleccionado.codigo }}</h2>
+          <button class="modal-close" (click)="cerrarDetalle()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-estado">
+            <span class="badge-estado grande" [class]="getEstadoClase(reporteSeleccionado.estado)">{{ getEstadoIcono(reporteSeleccionado.estado) }} {{ reporteSeleccionado.estado }}</span>
+            <span class="modal-fecha">{{ formatearFechaCompleta(reporteSeleccionado.fechaRaw) }}</span>
+          </div>
+          <div class="modal-seccion">
+            <h4>🖥️ Equipo</h4>
+            <div class="modal-grid">
+              <div><small>Marca</small><strong>{{ reporteSeleccionado.marca }}</strong></div>
+              <div><small>Modelo</small><strong>{{ reporteSeleccionado.modelo }}</strong></div>
+              <div><small>Tipo</small><strong>{{ reporteSeleccionado.tipo }}</strong></div>
+              <div><small>N° Serie</small><strong>{{ reporteSeleccionado.serie }}</strong></div>
+            </div>
+          </div>
+          <div class="modal-seccion">
+            <h4>🔧 Falla Reportada</h4>
+            <p class="falla-texto">{{ reporteSeleccionado.descripcion || 'Sin descripción' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,208 @@
+/* ============================================================
+   CLIENTE - COTIZACIONES
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.page {
+    padding: 24px;
+    min-height: 100vh;
+    background: #f8fafc;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 1. HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.header h1 { font-size: 22px; font-weight: 700; color: #0f172a; }
+.header p  { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+.btn-recargar {
+    padding: 8px 16px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-recargar:hover { background: #1d4ed8; }
+
+/* 2. ALERTAS */
+.alerta {
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.alerta.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.alerta.exito { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; }
+
+/* 3. LOADING */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px;
+    background: #fff;
+    border-radius: 12px;
+    gap: 12px;
+}
+.spinner {
+    width: 40px; height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading p { color: #64748b; font-size: 14px; }
+
+/* 4. VACÍO */
+.vacio {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 2px dashed #e2e8f0;
+}
+.vacio-icono { font-size: 48px; display: block; margin-bottom: 8px; }
+.vacio p { color: #94a3b8; font-size: 15px; }
+.vacio-sub { font-size: 12px !important; margin-top: 4px; }
+
+/* 5. LISTA DE COTIZACIONES */
+.cot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cot-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s;
+}
+.cot-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.cot-card.pendiente { border-left: 4px solid #f59e0b; }
+.cot-card.aprobada  { border-left: 4px solid #10b981; }
+.cot-card.rechazada { border-left: 4px solid #ef4444; }
+
+/* 6. CABECERA DE LA CARD */
+.cot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #fafbfc;
+    border-bottom: 1px solid #f1f5f9;
+}
+.cot-ticket { display: flex; flex-direction: column; gap: 2px; }
+.ticket-label { font-size: 15px; font-weight: 700; color: #0f172a; }
+.cot-id { font-size: 11px; color: #94a3b8; }
+
+.estado-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.estado-badge.pendiente { background: #fef3c7; color: #92400e; }
+.estado-badge.aprobado  { background: #d1fae5; color: #065f46; }
+.estado-badge.rechazado { background: #fee2e2; color: #991b1b; }
+
+/* 7. INFORMACIÓN */
+.cot-info {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.info-row { display: flex; gap: 10px; font-size: 13px; }
+.info-label { font-weight: 600; color: #64748b; min-width: 80px; }
+.info-value { color: #334155; }
+.info-value.descripcion {
+    background: #fefce8;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid #fde68a;
+}
+
+/* 8. TOTALES */
+.cot-totales {
+    margin: 0 20px 16px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+    color: #475569;
+}
+.total-final {
+    border-top: 2px solid #e2e8f0;
+    padding-top: 8px;
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #059669;
+}
+
+/* 9. ACCIONES */
+.cot-acciones {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px 16px;
+}
+.btn-accion {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-aceptar { background: #10b981; color: #fff; }
+.btn-aceptar:hover { background: #059669; transform: translateY(-1px); }
+.btn-rechazar { background: #fff; color: #ef4444; border: 2px solid #ef4444; }
+.btn-rechazar:hover { background: #ef4444; color: #fff; transform: translateY(-1px); }
+
+/* 10. MENSAJE POST-ACCIÓN */
+.cot-mensaje {
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border-top: 1px solid #f1f5f9;
+}
+.cot-mensaje.aprobado { background: #f0fdf4; color: #065f46; }
+.cot-mensaje.rechazado { background: #fef2f2; color: #991b1b; }
+
+/* 11. RESPONSIVE */
+@media (max-width: 768px) {
+    .page { padding: 14px; }
+    .cot-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .cot-acciones { flex-direction: column; }
+}

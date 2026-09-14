@@ -1,0 +1,198 @@
+<div class="dashboard-page">
+
+  <!-- Loading -->
+  @if (cargando) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando panel de control...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error && !cargando) {
+    <div class="error-container">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error }}</p>
+      <button class="btn-reintentar" (click)="recargarDatos()">🔄 Reintentar</button>
+    </div>
+  }
+
+  <!-- Contenido principal -->
+  @if (!cargando && !error) {
+    
+    <!-- Header -->
+    <div class="header">
+      <div class="header-info">
+        <h1>🔧 Bienvenido, {{ nombreTecnico }}</h1>
+        <p>Panel de control de tus órdenes de trabajo</p>
+      </div>
+      <button class="btn-actualizar" (click)="recargarDatos()">🔄 Actualizar</button>
+    </div>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card azul" routerLink="/tecnico/ordenes-asignadas">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalAsignadas }}</span>
+          <span class="stat-label">Órdenes asignadas</span>
+        </div>
+      </div>
+      <div class="stat-card celeste" routerLink="/tecnico/evaluacion-equipos">
+        <div class="stat-icon">🔍</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ enDiagnostico }}</span>
+          <span class="stat-label">En diagnóstico</span>
+        </div>
+      </div>
+      <div class="stat-card amarillo" routerLink="/tecnico/reparaciones">
+        <div class="stat-icon">🔧</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ enReparacion }}</span>
+          <span class="stat-label">En reparación</span>
+        </div>
+      </div>
+      <div class="stat-card morado" routerLink="/tecnico/pruebas-funcionamiento">
+        <div class="stat-icon">🧪</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ enPruebas }}</span>
+          <span class="stat-label">En pruebas</span>
+        </div>
+      </div>
+      <div class="stat-card verde" routerLink="/tecnico/ordenes-asignadas">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ listosEntrega }}</span>
+          <span class="stat-label">Listos para entrega</span>
+        </div>
+      </div>
+      <div class="stat-card naranja" routerLink="/tecnico/evaluacion-equipos">
+        <div class="stat-icon">📝</div>
+        <div class="stat-content">
+          <span class="stat-value">{{ evaluacionesPendientes }}</span>
+          <span class="stat-label">Evaluaciones pend.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      
+      <!-- Órdenes recientes -->
+      <div class="panel panel-ordenes">
+        <div class="panel-header">
+          <h2>📋 Órdenes Recientes</h2>
+          <a routerLink="/tecnico/ordenes-asignadas" class="btn-ver-todas">Ver todas →</a>
+        </div>
+
+        @if (ordenesRecientes.length === 0) {
+          <div class="panel-empty">
+            <span>📭</span>
+            <p>No hay órdenes asignadas</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Equipo</th>
+                  <th>Cliente</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (o of ordenesRecientes; track o.id) {
+                  <tr>
+                    <td><strong>{{ o.ticket }}</strong></td>
+                    <td>{{ o.equipo }}</td>
+                    <td>{{ o.cliente }}</td>
+                    <td>
+                      <span class="badge-estado" [class]="claseEstado(o.estado)">{{ o.estado }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Panel derecho: Vencimientos + Cotizaciones -->
+      <div class="panel-right">
+        
+        <!-- Próximos vencimientos -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>⏰ Próximos Vencimientos</h2>
+            <a routerLink="/tecnico/reparaciones" class="btn-ver-todas">Ver todas →</a>
+          </div>
+
+          @if (proximosVencer.length === 0) {
+            <div class="panel-empty">
+              <span>🎉</span>
+              <p>No hay órdenes por vencer</p>
+            </div>
+          } @else {
+            <div class="vencimientos-list">
+              @for (v of proximosVencer; track v.ticket) {
+                <div class="vencimiento-item" [class]="claseUrgencia(v.diasRestantes)">
+                  <div class="vencimiento-top">
+                    <strong>{{ v.ticket }}</strong>
+                    <span class="dias-badge" [class]="claseUrgencia(v.diasRestantes)">
+                      @if (v.diasRestantes <= 0) { ⚠️ Vencido }
+                      @else if (v.diasRestantes === 1) { 🔴 1 día }
+                      @else { 🟡 {{ v.diasRestantes }} días }
+                    </span>
+                  </div>
+                  <div class="vencimiento-detalle">
+                    <div><span>Cliente:</span> {{ v.cliente }}</div>
+                    <div><span>Equipo:</span> {{ v.equipo }}</div>
+                    <div><span>Plazo:</span> {{ v.plazo | date:'dd/MM/yyyy' }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Cotizaciones pendientes -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>💰 Cotizaciones Pendientes</h2>
+            <a routerLink="/tecnico/cotizaciones" class="btn-ver-todas">Ver todas →</a>
+          </div>
+
+          @if (cotizaciones.length === 0) {
+            <div class="panel-empty">
+              <span>📋</span>
+              <p>No hay cotizaciones pendientes</p>
+            </div>
+          } @else {
+            <div class="cotizaciones-list">
+              @for (c of cotizaciones; track c.id) {
+                <div class="cotizacion-item">
+                  <div class="cotizacion-top">
+                    <span class="ticket-badge">{{ c.ticket }}</span>
+                    <span class="monto">{{ formatearMonto(c.monto) }}</span>
+                  </div>
+                  <div class="cotizacion-detalle">
+                    <div><span>Cliente:</span> {{ c.cliente }}</div>
+                    <div><span>Equipo:</span> {{ c.equipo }}</div>
+                    <div><span>Estado:</span> 
+                      <span class="badge-cotizacion" [class.pendiente]="c.estado === 'Pendiente'">
+                        {{ c.estado }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+</div>  

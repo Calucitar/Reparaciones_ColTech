@@ -1,0 +1,596 @@
+/* ============================================================
+   ADMINISTRADOR - DEVOLUCIONES
+   Diseño moderno y profesional
+   ============================================================ */
+
+/* 1. CONTENEDOR PRINCIPAL */
+.devoluciones-page {
+  padding: 32px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 2. HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.header-izquierda h1 {
+  font-size: 28px;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.header-izquierda p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.header-derecha {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Mini estadísticas */
+.stats-mini {
+  display: flex;
+  gap: 12px;
+}
+
+.stat-mini {
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  min-width: 80px;
+}
+
+.stat-mini-num {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.stat-mini-lbl {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-mini.pendiente .stat-mini-num { color: #f59e0b; }
+.stat-mini.notificado .stat-mini-num { color: #10b981; }
+
+.btn-recargar {
+  padding: 12px 24px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-recargar:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
+}
+
+/* 3. LOADING */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px;
+  background: #fff;
+  border-radius: 14px;
+  color: #64748b;
+  border: 1px solid #e8edf2;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* 4. ERROR */
+.error-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.error-icon {
+  font-size: 32px;
+}
+
+.error-content h3 {
+  color: #dc2626;
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.error-content p {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+}
+
+.btn-reintentar {
+  margin-left: auto;
+  padding: 10px 20px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-reintentar:hover {
+  background: #b91c1c;
+}
+
+/* 5. ESTADO VACÍO */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  background: #fff;
+  border-radius: 14px;
+  border: 2px dashed #e2e8f0;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.empty-state p {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 6. TABLA */
+.table-wrapper {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e8edf2;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+thead {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+th {
+  color: #fff;
+  padding: 16px 18px;
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: left;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.devolucion-row {
+  transition: all 0.2s ease;
+}
+
+.devolucion-row:hover td {
+  background: #f8fafc;
+}
+
+.devolucion-row:last-child td {
+  border-bottom: none;
+}
+
+/* 7. CELDAS ESPECIALES */
+.orden-badge {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.cliente-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cliente-nombre {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.cliente-email {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.equipo-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.equipo-icon {
+  font-size: 18px;
+}
+
+.tecnico-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tecnico-avatar {
+  font-size: 18px;
+}
+
+.diagnostico-cell {
+  max-width: 250px;
+}
+
+.diagnostico-cell p {
+  margin: 0;
+  background: #fff5f5;
+  border-left: 4px solid #ef4444;
+  padding: 10px 12px;
+  border-radius: 0 8px 8px 0;
+  color: #991b1b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.fecha-badge {
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* 8. BADGES DE ESTADO */
+.estado-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.estado-badge.pendiente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado-badge.notificado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.estado-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.estado-badge.pendiente .estado-dot {
+  background: #f59e0b;
+  animation: pulse 2s infinite;
+}
+
+.estado-badge.notificado .estado-dot {
+  background: #10b981;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* 9. BOTONES DE ACCIÓN */
+.btn-notificar {
+  padding: 10px 18px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-notificar:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.notificado-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 10. MODAL DE CONFIRMACIÓN */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-confirmacion {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px;
+  width: 95%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.modal-confirmacion h3 {
+  color: #0f172a;
+  margin: 0 0 12px 0;
+  font-size: 20px;
+}
+
+.modal-confirmacion p {
+  color: #64748b;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.modal-email {
+  background: #f1f5f9;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #3b82f6 !important;
+  display: inline-block;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.btn-cancelar {
+  padding: 10px 24px;
+  background: #e2e8f0;
+  color: #475569;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #cbd5e1;
+}
+
+.btn-confirmar {
+  padding: 10px 24px;
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-confirmar:hover {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* 11. TOAST */
+.toast-exito {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #065f46;
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 12. RESPONSIVE */
+@media (max-width: 768px) {
+  .devoluciones-page {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+  }
+  
+  .header-derecha {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .stats-mini {
+    justify-content: space-between;
+  }
+  
+  .stat-mini {
+    flex: 1;
+  }
+  
+  .btn-recargar {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .modal-confirmacion {
+    padding: 24px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  table {
+    font-size: 12px;
+  }
+  
+  th, td {
+    padding: 10px 12px;
+  }
+}

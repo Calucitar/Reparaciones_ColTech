@@ -1,0 +1,63 @@
+<div class="sidebar">
+    <div class="logo">
+        <h2>Reparaciones</h2>
+    </div>
+
+    <div class="admin-profile">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Administrador">
+        <h3>Admin</h3>
+    </div>
+
+    <ul class="menu">
+        <li>
+            <a routerLink="/administrador/dashboard" routerLinkActive="active">
+                <span class="icono">📊</span><span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/tickets" routerLinkActive="active">
+                <span class="icono">🎫</span><span>Tickets</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/orden-trabajo" routerLinkActive="active">
+                <span class="icono">📋</span><span>Órdenes de Trabajo</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/usuarios" routerLinkActive="active">
+                <span class="icono">👥</span><span>Usuarios</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/cotizaciones" routerLinkActive="active">
+                <span class="icono">💰</span><span>Cotizaciones</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/gestion-pagos" routerLinkActive="active">
+                <span class="icono">💳</span><span>Gestión de Pagos</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/devoluciones" routerLinkActive="active">
+                <span class="icono">📦</span><span>Devoluciones</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/administrador/notificaciones" routerLinkActive="active">
+                <span class="icono">🔔</span><span>Notificaciones</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="logout">
+        <a routerLink="/login" (click)="cerrarSesion()">
+            <span class="icono">🚪</span><span>Cerrar sesión</span>
+        </a>
+    </div>
+</div>
+
+<div class="contenido">
+    <router-outlet></router-outlet>
+</div>

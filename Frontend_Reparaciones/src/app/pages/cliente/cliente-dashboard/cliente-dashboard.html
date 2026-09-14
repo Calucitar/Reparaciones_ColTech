@@ -1,0 +1,184 @@
+<div class="dashboard-page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>👋 ¡Hola, {{ nombreCliente() }}!</h1>
+      <p>Panel de control de tus servicios</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-recargar" (click)="recargarDashboard()" [disabled]="cargando()">
+        🔄 Actualizar
+      </button>
+      <button class="btn-cerrar-sesion" (click)="cerrarSesion()">
+        🚪 Salir
+      </button>
+    </div>
+  </div>
+
+  <!-- ESTADO DE CARGA -->
+  @if (cargando()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando dashboard...</p>
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (errorCarga()) {
+    <div class="error-container">
+      <div class="error-icon">⚠️</div>
+      <h3>Error al cargar</h3>
+      <p>{{ mensajeError() || 'No se pudieron cargar los datos.' }}</p>
+      <button class="btn-reintentar" (click)="recargarDashboard()">🔄 Reintentar</button>
+      <button class="btn-login" (click)="cerrarSesion()">🔐 Ir al login</button>
+    </div>
+  }
+
+  <!-- CONTENIDO PRINCIPAL -->
+  @if (!cargando() && !errorCarga()) {
+    
+    <!-- TARJETAS DE ESTADÍSTICAS -->
+    <div class="stats-cards">
+      <div class="stat-card azul">
+        <div class="icono">📊</div>
+        <div class="info">
+          <div class="value">{{ totalSolicitudes() }}</div>
+          <div class="label">Total Solicitudes</div>
+        </div>
+      </div>
+      
+      <div class="stat-card amarillo">
+        <div class="icono">⏳</div>
+        <div class="info">
+          <div class="value">{{ solicitudesPendientes() }}</div>
+          <div class="label">Pendientes</div>
+        </div>
+      </div>
+      
+      <div class="stat-card verde">
+        <div class="icono">✅</div>
+        <div class="info">
+          <div class="value">{{ solicitudesTerminadas() }}</div>
+          <div class="label">Terminadas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL EN 2 COLUMNAS -->
+    <div class="dashboard-contenido">
+      
+      <!-- COLUMNA IZQUIERDA: TABLA DE SOLICITUDES -->
+      <div class="seccion-izquierda">
+        
+        <div class="tabla-container">
+          <div class="tabla-header">
+            <h2>📋 Mis Solicitudes</h2>
+            <button class="btn-ver-todas" (click)="verTodasSolicitudes()">Ver todas →</button>
+          </div>
+
+          @if (ultimasSolicitudes().length === 0) {
+            <div class="empty-state">
+              <p>📭 No tienes solicitudes aún</p>
+              <button class="btn-primary" (click)="nuevaSolicitud()">+ Crear primera solicitud</button>
+            </div>
+          } @else {
+            <table>
+              <thead>
+                <tr>
+                  <th>CÓDIGO</th>
+                  <th>EQUIPO</th>
+                  <th>TIPO</th>
+                  <th>ESTADO</th>
+                  <th>FECHA</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (solicitud of ultimasSolicitudes(); track solicitud.id) {
+                  <tr class="fila-clickeable" (click)="verSolicitud(solicitud.id)">
+                    <td>
+                      <span class="ticket-badge">{{ solicitud.codigo }}</span>
+                    </td>
+                    <td>{{ solicitud.equipo }}</td>
+                    <td>
+                      <span class="badge-tipo">{{ solicitud.tipo }}</span>
+                    </td>
+                    <td>
+                      <span class="estado" [ngClass]="getEstadoClase(solicitud.estado)">
+                        {{ solicitud.estado }}
+                      </span>
+                    </td>
+                    <td>{{ solicitud.fecha }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: ESTADÍSTICAS -->
+      <div class="estadisticas-container">
+        <h2>📈 Estadísticas</h2>
+        
+        <!-- Progreso General -->
+        <div class="grafico-progreso-card">
+          <div class="progreso-info">
+            <span class="progreso-titulo">Progreso General</span>
+            <span class="progreso-valor">{{ porcentajeCompletadas() }}%</span>
+          </div>
+          <div class="barra-progreso-fondo">
+            <div class="barra-progreso-relleno" [style.width.%]="porcentajeCompletadas()"></div>
+          </div>
+          <div class="progreso-subtext">
+            {{ solicitudesTerminadas() }} de {{ totalSolicitudes() }} completadas
+          </div>
+        </div>
+
+        <!-- En Proceso -->
+        <div class="grafico-progreso-card">
+          <div class="progreso-info">
+            <span class="progreso-titulo">En Proceso</span>
+            <span class="progreso-valor">{{ solicitudesEnProceso() }}</span>
+          </div>
+          <div class="barra-progreso-fondo">
+            <div class="barra-progreso-relleno" [style.width.%]="porcentajeEnProceso()"></div>
+          </div>
+          <div class="progreso-subtext">En reparación actualmente</div>
+        </div>
+
+        <!-- Información Personal -->
+        <div class="marcas-stats-card">
+          <h3>👤 Información Personal</h3>
+          
+          <div class="marca-item">
+            <div class="marca-info">
+              <span class="marca-nombre">📧 Email</span>
+            </div>
+            <div style="color: #334155; font-size: 13px; margin-top: 4px;">
+              {{ email() }}
+            </div>
+          </div>
+          
+          <div class="marca-item">
+            <div class="marca-info">
+              <span class="marca-nombre">📱 Teléfono</span>
+            </div>
+            <div style="color: #334155; font-size: 13px; margin-top: 4px;">
+              {{ telefono() }}
+            </div>
+          </div>
+          
+          <div class="marca-item">
+            <div class="marca-info">
+              <span class="marca-nombre">📍 Dirección</span>
+            </div>
+            <div style="color: #334155; font-size: 13px; margin-top: 4px;">
+              {{ direccion() }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

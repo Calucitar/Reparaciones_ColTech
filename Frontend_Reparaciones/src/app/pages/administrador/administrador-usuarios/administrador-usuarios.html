@@ -1,0 +1,217 @@
+<div class="usuarios-page">
+
+    <div class="header">
+        <div>
+            <h1>👥 Gestión de Usuarios</h1>
+            <p>Administración de clientes, técnicos y administradores</p>
+        </div>
+        <div class="nuevo-usuario-container">
+            <button class="btn-nuevo" (click)="mostrarOpciones = !mostrarOpciones">+ Nuevo Usuario</button>
+            <div class="menu-nuevo-usuario" *ngIf="mostrarOpciones">
+                <button class="opcion-usuario" (click)="abrirModal('Administrador')">👨‍💼 Administrador</button>
+                <button class="opcion-usuario" (click)="abrirModal('Técnico')">🛠️ Técnico</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="buscador-container">
+        <input type="text" placeholder="🔍 Buscar usuario..." [(ngModel)]="buscador">
+    </div>
+
+    <!-- Cards de resumen -->
+    <div class="cards-resumen">
+        <div class="card-mini" (click)="filtrarPorRol('')">
+            <h3>📋 Todos</h3>
+            <h1>{{ usuarios.length }}</h1>
+        </div>
+        <div class="card-mini" (click)="filtrarPorRol('CLIENTE')">
+            <h3>👥 Clientes</h3>
+            <h1>{{ totalClientes }}</h1>
+        </div>
+        <div class="card-mini" (click)="filtrarPorRol('TECNICO')">
+            <h3>🛠️ Técnicos</h3>
+            <h1>{{ totalTecnicos }}</h1>
+        </div>
+        <div class="card-mini" (click)="filtrarPorRol('ADMINISTRADOR')">
+            <h3>🛡️ Administradores</h3>
+            <h1>{{ totalAdministradores }}</h1>
+        </div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error" class="error-mensaje">
+        ❌ {{ error }}
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="cargando" style="text-align:center; padding:40px;">
+        <div class="spinner"></div>
+        <p>Cargando usuarios...</p>
+    </div>
+
+    <!-- Tabla -->
+    <div class="tabla-container" *ngIf="!cargando && !error">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>DNI</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let usuario of usuariosFiltrados">
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.correo }}</td>
+                    <td>{{ usuario.telefono }}</td>
+                    <td>{{ usuario.dni }}</td>
+                    <td>
+                        <span class="rol-badge" [ngClass]="{
+                            'rol-admin': usuario.rol === 'ADMINISTRADOR' || usuario.rol === 'ADMIN',
+                            'rol-tecnico': usuario.rol === 'TECNICO' || usuario.rol === 'TÉCNICO',
+                            'rol-cliente': usuario.rol === 'CLIENTE'
+                        }">
+                            {{ getRolTexto(usuario.rol) }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="estado" 
+                              [ngClass]="{'activo': usuario.estado === 'Activo', 
+                                         'inactivo': usuario.estado === 'Inactivo'}">
+                            {{ usuario.estado }}
+                        </span>
+                    </td>
+                    <td class="acciones">
+                        <button class="btn-estado" 
+                                (click)="cambiarEstado(usuario)" 
+                                [title]="usuario.estado === 'Activo' ? 'Desactivar' : 'Activar'">
+                            {{ usuario.estado === 'Activo' ? '🔒' : '🔓' }}
+                        </button>
+                        <button class="btn-eliminar" 
+                                (click)="eliminarUsuario(usuario)" 
+                                title="Eliminar">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="usuariosFiltrados.length === 0">
+                    <td colspan="8" style="text-align:center; padding:30px;">
+                        📭 No se encontraron usuarios
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Crear Usuario -->
+    <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+        <div class="modal-contenido" (click)="$event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h2>Registrar {{ tipoUsuario }}</h2>
+                <button (click)="cerrarModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+            </div>
+            
+            <form (ngSubmit)="guardarUsuario()">
+                <!-- DNI con búsqueda RENIEC -->
+                <div class="form-group">
+                    <label>DNI</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" 
+                               [(ngModel)]="nuevoUsuario.dni" 
+                               name="dni" 
+                               maxlength="8"
+                               (input)="onDniChange()" 
+                               placeholder="Ingrese DNI" 
+                               style="flex:1;">
+                        <button type="button" 
+                                (click)="buscarDniReniec()" 
+                                [disabled]="buscandoDni"
+                                class="btn-buscar">
+                            {{ buscandoDni ? '⏳' : '🔍' }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading RENIEC -->
+                <div *ngIf="buscandoDni" style="text-align:center; padding:8px; color:#666;">
+                    ⏳ Consultando RENIEC...
+                </div>
+
+                <!-- Nombre (SOLO LECTURA después de buscar) -->
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" 
+                           [(ngModel)]="nuevoUsuario.nombre" 
+                           name="nombre" 
+                           required 
+                           placeholder="Nombres"
+                           [readonly]="nuevoUsuario.nombre !== ''"
+                           [class.input-readonly]="nuevoUsuario.nombre !== ''">
+                </div>
+
+                <!-- Apellido (SOLO LECTURA después de buscar) -->
+                <div class="form-group">
+                    <label>Apellido *</label>
+                    <input type="text" 
+                           [(ngModel)]="nuevoUsuario.apellido" 
+                           name="apellido" 
+                           required 
+                           placeholder="Apellidos"
+                           [readonly]="nuevoUsuario.apellido !== ''"
+                           [class.input-readonly]="nuevoUsuario.apellido !== ''">
+                </div>
+
+                <!-- Correo -->
+                <div class="form-group">
+                    <label>Correo Electrónico *</label>
+                    <input type="email" 
+                           [(ngModel)]="nuevoUsuario.correo" 
+                           name="correo" 
+                           required 
+                           placeholder="correo@ejemplo.com">
+                </div>
+
+                <!-- Teléfono -->
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="text" 
+                           [(ngModel)]="nuevoUsuario.telefono" 
+                           name="telefono" 
+                           placeholder="987654321" 
+                           maxlength="9">
+                </div>
+
+                <!-- Contraseña -->
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" 
+                           [(ngModel)]="nuevoUsuario.contrasena" 
+                           name="contrasena" 
+                           placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <!-- Botones -->
+                <div style="display:flex; gap:10px; margin-top:16px;">
+                    <button type="button" 
+                            (click)="cerrarModal()" 
+                            style="flex:1; padding:10px; border:1px solid #ccc; border-radius:6px; background:#f1f5f9;">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            [disabled]="buscandoDni"
+                            style="flex:1; padding:10px; border:none; border-radius:6px; background:#3b82f6; color:white; font-weight:600;">
+                        💾 Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

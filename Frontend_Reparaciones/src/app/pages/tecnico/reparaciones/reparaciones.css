@@ -1,0 +1,52 @@
+.page { padding: 24px; min-height: 100vh; background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.header h1 { font-size: 22px; color: #0f172a; margin: 0; }
+.header p { color: #64748b; font-size: 13px; }
+.btn-recargar { padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+
+.loading { text-align: center; padding: 60px; color: #64748b; }
+.error { padding: 12px; background: #fef2f2; color: #dc2626; border-radius: 8px; margin-bottom: 16px; }
+.exito { padding: 12px; background: #d1fae5; color: #065f46; border-radius: 8px; margin-bottom: 16px; }
+
+.selector { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+.selector label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px; }
+.selector select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+
+.card { background: #fff; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.info { margin-bottom: 16px; }
+.info h3 { margin: 0; font-size: 16px; }
+.info p { margin: 2px 0; font-size: 13px; color: #64748b; }
+
+/* Pipeline */
+.pipeline { display: flex; gap: 4px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9; }
+.paso { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #94a3b8; flex: 1; }
+.paso:not(:last-child)::after { content: ''; flex: 1; height: 2px; background: #e2e8f0; margin-left: 4px; }
+.paso.completado { color: #10b981; }
+.paso.completado .punto { background: #10b981; }
+.paso.completado::after { background: #10b981; }
+.paso.activo { color: #2563eb; font-weight: 700; }
+.paso.activo .punto { background: #2563eb; width: 8px; height: 8px; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+.punto { width: 6px; height: 6px; border-radius: 50%; background: #cbd5e1; }
+
+.acciones-estado { display: flex; gap: 10px; margin-bottom: 20px; }
+.btn-avanzar { padding: 10px 20px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.btn-retroceder { padding: 10px 20px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.listo-badge { padding: 10px 20px; background: #d1fae5; color: #065f46; border-radius: 8px; font-weight: 700; }
+
+.seccion { margin-bottom: 20px; }
+.seccion h3 { font-size: 14px; color: #374151; margin-bottom: 8px; }
+.input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.input-row input { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
+.btn-add { padding: 10px 16px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 20px; font-size: 12px; margin: 4px; }
+.tag button { background: none; border: none; color: #ef4444; cursor: pointer; }
+
+.repuestos-list { margin-top: 8px; }
+.repuesto-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+.total-repuestos { text-align: right; padding-top: 8px; font-weight: 600; color: #059669; }
+
+textarea { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; resize: vertical; outline: none; font-family: inherit; }
+
+.btn-guardar { width: 100%; padding: 14px; background: #059669; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+.btn-guardar:disabled { background: #94a3b8; cursor: not-allowed; }

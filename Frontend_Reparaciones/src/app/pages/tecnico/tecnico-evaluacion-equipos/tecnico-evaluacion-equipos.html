@@ -1,0 +1,131 @@
+<div class="eval-page">
+    <div class="header">
+        <div>
+            <h1>🔧 Panel de Evaluación Técnica</h1>
+            <p>Revisa y diagnostica los equipos asignados a tus órdenes de trabajo</p>
+        </div>
+        <button class="btn-recargar" (click)="cargarOrdenes()" [disabled]="cargando">
+            {{ cargando ? '⏳ Cargando...' : '🔄 Actualizar' }}
+        </button>
+    </div>
+
+    <!-- MENSAJES -->
+    @if (error && !cargando) {
+        <div class="alerta-error"><span>⚠️ {{ error }}</span><button (click)="error = ''">✕</button></div>
+    }
+    @if (exito && !cargando) {
+        <div class="alerta-exito"><span>✅ {{ exito }}</span><button (click)="exito = ''">✕</button></div>
+    }
+
+    <!-- LOADING -->
+    @if (cargando) {
+        <div class="loading"><div class="spinner"></div><p>Cargando órdenes...</p></div>
+    }
+
+    <!-- VACÍO -->
+    @if (!cargando && tickets.length === 0) {
+        <div class="empty">
+            <span>📭</span>
+            <p>No tienes órdenes pendientes de evaluación</p>
+        </div>
+    }
+
+    <!-- TABLA DE ÓRDENES -->
+    @if (!cargando && tickets.length > 0) {
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Cliente</th>
+                        <th>Equipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (t of ticketsFiltrados; track t.id) {
+                        <tr>
+                            <td><strong>{{ t.ticket }}</strong></td>
+                            <td>{{ t.cliente }}</td>
+                            <td>{{ t.marca }} {{ t.modelo }}</td>
+                            <td>{{ formatearFecha(t.fechaInicio) }}</td>
+                            <td><span class="estado-badge {{ t.estado?.toLowerCase() }}">{{ t.estado }}</span></td>
+                            <td>
+                                <button class="btn-evaluar" (click)="seleccionarParaEvaluar(t)">🔍 Evaluar</button>
+                            </td>
+                        </tr>
+                    }
+                    @if (ticketsFiltrados.length === 0) {
+                        <tr><td colspan="6" class="text-center">No se encontraron órdenes</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- MODAL DE EVALUACIÓN -->
+@if (ticketSeleccionado) {
+    <div class="modal-overlay" (click)="cerrarEvaluacion()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>🔍 Evaluación Técnica</h2>
+                <button class="btn-close" (click)="cerrarEvaluacion()">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="modal-subtitulo">{{ ticketSeleccionado.ticket }} — {{ ticketSeleccionado.equipo }}</p>
+
+                <!-- Datos de la orden -->
+                <div class="ticket-info">
+                    <div class="info-row"><span>Cliente:</span><strong>{{ ticketSeleccionado.cliente }}</strong></div>
+                    <div class="info-row"><span>Equipo:</span><strong>{{ ticketSeleccionado.marca }} {{ ticketSeleccionado.modelo }}</strong></div>
+                    <div class="info-row"><span>Falla:</span><strong class="falla">{{ ticketSeleccionado.descripcion || 'Sin descripción' }}</strong></div>
+                </div>
+
+                <!-- Mensajes -->
+                @if (guardado && !procesando) {
+                    <div class="alerta-exito">✅ Evaluación guardada correctamente</div>
+                }
+                @if (error && !guardado) {
+                    <div class="alerta-error">⚠️ {{ error }}</div>
+                }
+
+                <!-- Formulario -->
+                <form (ngSubmit)="guardarEvaluacion()">
+                    <div class="form-grid">
+                        <div class="form-grupo">
+                            <label>Procesador</label>
+                            <input type="text" [(ngModel)]="evaluacion.procesador" name="proc" placeholder="Intel Core i5">
+                        </div>
+                        <div class="form-grupo">
+                            <label>RAM</label>
+                            <input type="text" [(ngModel)]="evaluacion.ram" name="ram" placeholder="16GB">
+                        </div>
+                        <div class="form-grupo">
+                            <label>Almacenamiento</label>
+                            <input type="text" [(ngModel)]="evaluacion.almacenamiento" name="alm" placeholder="512GB SSD">
+                        </div>
+                        <div class="form-grupo">
+                            <label>Sistema Operativo</label>
+                            <input type="text" [(ngModel)]="evaluacion.sistemaOperativo" name="so" placeholder="Windows 11">
+                        </div>
+                    </div>
+                    <div class="form-grupo">
+                        <label>Diagnóstico Técnico <span class="required">*</span></label>
+                        <textarea [(ngModel)]="evaluacion.detallesRevision" name="desc" rows="5" 
+                                  placeholder="Describe los hallazgos y diagnóstico..." required></textarea>
+                    </div>
+                    <div class="botones">
+                        <button type="button" class="btn-cancelar" (click)="cerrarEvaluacion()">Cancelar</button>
+                        <button type="submit" class="btn-guardar" [disabled]="procesando">
+                            {{ procesando ? '⏳ Guardando...' : '💾 Guardar Evaluación' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

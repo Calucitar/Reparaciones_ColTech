@@ -1,0 +1,650 @@
+/* ============================================================
+   RESET Y BASE
+   ============================================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ============================================================
+   NOTIFICACIÓN FLOTANTE DE ÉXITO
+   ============================================================ */
+.notificacion-exito {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    background: #16a34a;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideInRight 0.4s ease;
+}
+
+.notif-icono {
+    font-size: 24px;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(120px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   LAYOUT PRINCIPAL
+   ============================================================ */
+.tickets-container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    background: #f5f6fa;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.titulo h2 {
+    margin: 0;
+    color: #1a1a2e;
+    font-size: 24px;
+}
+
+.usuario {
+    font-weight: 600;
+    color: #495057;
+}
+
+.contenido {
+    width: 100%;
+}
+
+.historial {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.historial h3 {
+    margin-bottom: 20px;
+    color: #1a1a2e;
+    font-size: 20px;
+}
+
+/* ============================================================
+   FILTROS Y BÚSQUEDA
+   ============================================================ */
+.acciones {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.acciones input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 15px;
+    border: 1.5px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.acciones select {
+    padding: 10px 15px;
+    border: 1.5px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+}
+
+.btn-limpiar {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-limpiar:hover {
+    background: #ff4757;
+}
+
+/* ============================================================
+   TABLA DE TICKETS
+   ============================================================ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f8f9fa;
+}
+
+th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+    color: #1a1a2e;
+}
+
+tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.descripcion-cell {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   ESTADOS (BADGES)
+   ============================================================ */
+.estado {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.pendiente  { background: #fff3cd; color: #856404; }
+.en-proceso { background: #d6e4ff; color: #0b5ed7; }
+.finalizado { background: #d4edda; color: #155724; }
+
+/* ============================================================
+   BOTONES DE ACCIÓN
+   ============================================================ */
+.btn-orden {
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.btn-orden:hover {
+    background: #3a5cd7;
+}
+
+.btn-ver-orden {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.btn-ver-orden:hover {
+    background: #059669;
+}
+
+/* ============================================================
+   MODAL BASE
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.btn-close {
+    border: none;
+    background: #f5f5f5;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.btn-close:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* ============================================================
+   MODAL CREAR ORDEN - Info Ticket
+   ============================================================ */
+.ticket-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 18px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+}
+
+.info-item {
+    display: flex;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-item .label {
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 50px;
+}
+
+.info-item .value {
+    color: #1a1a2e;
+    font-weight: 500;
+}
+
+.descripcion-falla {
+    background: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    font-size: 13px;
+}
+
+/* ============================================================
+   MODAL CREAR ORDEN - Formulario
+   ============================================================ */
+.formulario-orden {
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group-full {
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.loading-text {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.warning-text {
+    color: #f59e0b;
+    font-size: 12px;
+}
+
+/* ============================================================
+   MODAL CREAR ORDEN - Flujo de Estados
+   ============================================================ */
+.flujo-estados {
+    padding: 14px;
+    background: #f0f9ff;
+    border-radius: 10px;
+    border: 1px solid #bae6fd;
+    text-align: center;
+}
+
+.flujo-titulo {
+    font-weight: 600;
+    color: #0c4a6e;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.paso-activo-grande {
+    display: inline-block;
+    padding: 8px 20px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.flujo-info {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+.alerta-error-modal {
+    padding: 12px;
+    background: #fef2f2;
+    color: #dc2626;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* ============================================================
+   BOTONES DEL MODAL
+   ============================================================ */
+.botones {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 15px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.botones button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.cancelar {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.guardar {
+    background: #4a6cf7;
+    color: white;
+}
+
+.guardar:hover:not(:disabled) {
+    background: #3a5cd7;
+}
+
+.guardar:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   MODAL DETALLE DE ORDEN
+   ============================================================ */
+.modal-detalle {
+    max-width: 600px;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.modal-header-detalle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.detalle-header-icon {
+    font-size: 28px;
+}
+
+.detalle-header-text {
+    flex: 1;
+}
+
+.detalle-header-text h3 {
+    margin: 0;
+    font-size: 18px;
+    color: white;
+}
+
+.detalle-estado {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.detalle-contenido {
+    padding: 20px 25px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.detalle-seccion {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detalle-seccion:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detalle-seccion h4 {
+    margin: 0 0 12px;
+    color: #1a1a2e;
+    font-size: 15px;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.detalle-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detalle-label {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.detalle-value {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.detalle-orden-num {
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.detalle-falla {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   TIMELINE DE PROGRESO
+   ============================================================ */
+.timeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 10px 0;
+    overflow-x: auto;
+}
+
+.timeline-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 60px;
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.timeline-item.completado {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.timeline-punto {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    border: 3px solid #cbd5e1;
+    transition: all 0.3s;
+}
+
+.timeline-item.completado .timeline-punto {
+    background: #16a34a;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
+
+.timeline-linea {
+    flex: 1;
+    height: 3px;
+    background: #e2e8f0;
+    min-width: 20px;
+    transition: all 0.3s;
+}
+
+.timeline-linea.completado {
+    background: #16a34a;
+}
+
+/* ============================================================
+   LOADING Y ERROR
+   ============================================================ */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.error {
+    padding: 15px;
+    background: #fef2f2;
+    color: #dc2626;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+    .tickets-container { padding: 10px; }
+    .header { flex-direction: column; gap: 10px; }
+    .acciones { flex-direction: column; }
+    .info-grid { grid-template-columns: 1fr; }
+    .detalle-grid { grid-template-columns: 1fr; }
+    .modal-card { padding: 15px; }
+    .detalle-contenido { padding: 15px; }
+    .timeline { flex-wrap: wrap; justify-content: center; }
+    .timeline-linea { display: none; }
+}

@@ -1,0 +1,154 @@
+<div class="page">
+    <div class="header">
+        <div>
+            <h1>💰 Cotizaciones</h1>
+            <p>Órdenes disponibles para cotizar</p>
+        </div>
+        <button class="btn-recargar" (click)="recargar()" [disabled]="cargando">{{ cargando ? '⏳ Cargando...' : '🔄 Actualizar' }}</button>
+    </div>
+
+    <div style="background:#fef3c7; padding:8px; margin-bottom:12px; border-radius:8px; font-size:12px;">
+        ID Técnico: {{ idTecnico }} | Órdenes: {{ ordenes.length }} | Cargando: {{ cargando }}
+    </div>
+
+    @if (cargando) { <div class="loading"><div class="spinner"></div><p>Cargando órdenes...</p></div> }
+    @if (error && !cargando && !ordenSeleccionada) { <div class="alerta error">⚠️ {{ error }}</div> }
+    @if (exito) { <div class="alerta exito">✅ {{ exito }}</div> }
+
+    @if (!cargando && ordenes.length === 0) {
+        <div class="vacio"><span>📭</span><p>No tienes órdenes disponibles para cotizar</p></div>
+    }
+
+    @if (!cargando && ordenes.length > 0) {
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Ticket</th><th>Cliente</th><th>Equipo</th><th>Falla</th><th>Estado</th><th>Acción</th></tr></thead>
+                <tbody>
+                    @for (o of ordenes; track o.idOrden) {
+                        <tr>
+                            <td><strong>{{ o.ticket }}</strong></td>
+                            <td>{{ o.cliente }}</td>
+                            <td>{{ o.equipo }}</td>
+                            <td class="descripcion-cell">{{ o.descripcion || 'Sin descripción' }}</td>
+                            <td>
+                                <span class="estado-badge" [ngClass]="'estado-' + (o.estado?.toLowerCase() || 'pendiente')">
+                                    {{ o.estado || 'Pendiente' }}
+                                </span>
+                            </td>
+                            <td><button class="btn-cotizar" (click)="onOrdenChange(o)">💰 Cotizar</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- MODAL COTIZACIÓN -->
+@if (ordenSeleccionada) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header"><h2>💰 Crear Cotización</h2><button class="btn-close" (click)="cerrarModal()">✕</button></div>
+            <div class="modal-body">
+                <p class="modal-subtitulo">{{ ordenSeleccionada.ticket }} — {{ ordenSeleccionada.cliente }} — {{ ordenSeleccionada.equipo }}</p>
+
+                <!-- Diagnóstico -->
+                <div class="diagnostico-section">
+                    <h3>🔍 Diagnóstico Técnico</h3>
+                    @if (cargandoDiagnostico) { <div class="cargando-diag"><div class="spinner-sm"></div> Cargando...</div> }
+                    @else if (diagnostico) {
+                        <div class="diagnostico-content">
+                            <div class="diag-grid">
+                                <div class="diag-item"><span class="diag-label">Procesador</span><span class="diag-valor">{{ diagnostico.procesador }}</span></div>
+                                <div class="diag-item"><span class="diag-label">RAM</span><span class="diag-valor">{{ diagnostico.ram }}</span></div>
+                                <div class="diag-item"><span class="diag-label">Almacenamiento</span><span class="diag-valor">{{ diagnostico.almacenamiento }}</span></div>
+                                <div class="diag-item"><span class="diag-label">S.O.</span><span class="diag-valor">{{ diagnostico.sistema_operativo }}</span></div>
+                            </div>
+                            @if (diagnostico.detalles_revision) {
+                                <div class="diag-detalles"><p>{{ diagnostico.detalles_revision }}</p></div>
+                            }
+                        </div>
+                    } @else { <div class="sin-diagnostico">⚠️ No se encontró diagnóstico</div> }
+                </div>
+
+                <!-- Error dentro del modal -->
+                @if (error) { <div class="alerta error" style="margin-top:8px;">⚠️ {{ error }}</div> }
+
+                <!-- Repuestos -->
+                <div class="seccion">
+                    <h3>🔩 Repuestos</h3>
+                    <div class="add-row">
+                        <input [(ngModel)]="nuevoRepuesto.nombre" placeholder="Nombre del repuesto" (keyup.enter)="agregarRepuesto()">
+                        <input [(ngModel)]="nuevoRepuesto.cantidad" type="number" placeholder="Cant." min="1" class="input-sm" (keyup.enter)="agregarRepuesto()">
+                        <input [(ngModel)]="nuevoRepuesto.precioUnitario" type="number" placeholder="Precio S/" min="0.01" step="0.01" class="input-md" (keyup.enter)="agregarRepuesto()">
+                        <button class="btn-add" (click)="agregarRepuesto()">+</button>
+                    </div>
+                    @if (repuestos.length > 0) {
+                        <table class="tabla-items">
+                            <thead><tr><th>Repuesto</th><th class="text-center">Cant.</th><th class="text-right">P.Unit.</th><th class="text-right">Subtotal</th><th></th></tr></thead>
+                            <tbody>
+                                @for (r of repuestos; track $index) {
+                                    <tr>
+                                        <td>{{ r.nombre }}</td><td class="text-center">{{ r.cantidad }}</td>
+                                        <td class="text-right">{{ formatearMonto(r.precioUnitario) }}</td>
+                                        <td class="text-right">{{ formatearMonto(r.cantidad * r.precioUnitario) }}</td>
+                                        <td class="text-center"><button class="btn-del" (click)="quitarRepuesto($index)">✕</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="subtotal-seccion">Subtotal repuestos: <strong>{{ formatearMonto(totalRepuestos) }}</strong></div>
+                    }
+                </div>
+
+                <!-- Trabajos -->
+                <div class="seccion">
+                    <h3>🛠️ Trabajos</h3>
+                    <div class="add-row">
+                        <input [(ngModel)]="nuevoTrabajo.descripcion" placeholder="Descripción del trabajo" (keyup.enter)="agregarTrabajo()">
+                        <input [(ngModel)]="nuevoTrabajo.costo" type="number" placeholder="Costo S/" min="0.01" step="0.01" class="input-md" (keyup.enter)="agregarTrabajo()">
+                        <button class="btn-add" (click)="agregarTrabajo()">+</button>
+                    </div>
+                    @if (trabajos.length > 0) {
+                        <table class="tabla-items">
+                            <thead><tr><th>Trabajo</th><th class="text-right">Costo</th><th></th></tr></thead>
+                            <tbody>
+                                @for (t of trabajos; track $index) {
+                                    <tr><td>{{ t.descripcion }}</td><td class="text-right">{{ formatearMonto(t.costo) }}</td><td class="text-center"><button class="btn-del" (click)="quitarTrabajo($index)">✕</button></td></tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="subtotal-seccion">Subtotal trabajos: <strong>{{ formatearMonto(totalTrabajos) }}</strong></div>
+                    }
+                </div>
+
+                <!-- Mano de obra -->
+                <div class="seccion">
+                    <h3>👨‍🔧 Mano de Obra</h3>
+                    <input [(ngModel)]="manoObra" type="number" placeholder="0.00" min="0" step="0.01" class="input-monto">
+                    @if (manoObra > 0) { <div class="subtotal-seccion">Mano de obra: <strong>{{ formatearMonto(manoObra) }}</strong></div> }
+                </div>
+
+                <!-- Notas -->
+                <div class="seccion">
+                    <h3>📝 Notas</h3>
+                    <textarea [(ngModel)]="notas" rows="2" placeholder="Observaciones..."></textarea>
+                </div>
+
+                <!-- Totales -->
+                <div class="totales-box">
+                    <div class="total-row"><span>Repuestos</span><span>{{ formatearMonto(totalRepuestos) }}</span></div>
+                    <div class="total-row"><span>Trabajos</span><span>{{ formatearMonto(totalTrabajos) }}</span></div>
+                    <div class="total-row"><span>Mano de Obra</span><span>{{ formatearMonto(manoObra) }}</span></div>
+                    <div class="total-row total-final"><span>TOTAL</span><span>{{ formatearMonto(total) }}</span></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                <button class="btn-enviar" (click)="enviarCotizacion()" [disabled]="procesando">
+                    {{ procesando ? '⏳ Enviando...' : '📤 Enviar Cotización' }}
+                </button>
+            </div>
+        </div>
+    </div>
+}

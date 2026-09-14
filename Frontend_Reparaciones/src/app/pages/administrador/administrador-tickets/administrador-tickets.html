@@ -1,0 +1,113 @@
+@if (ordenCreada) {
+    <div class="notificacion-exito"><span class="notif-icono">✅</span><span>¡Orden <strong>#OT-{{ idOrdenCreada }}</strong> creada y asignada!</span></div>
+}
+@if (exito && !ordenCreada) {
+    <div class="notificacion-exito"><span class="notif-icono">✅</span><span>{{ exito }}</span></div>
+}
+
+<div class="tickets-container">
+    <div class="header"><div class="titulo">🎫 <h2>TICKETS</h2></div><div class="usuario">👤 Administrador</div></div>
+    <div class="contenido">
+        <div class="historial">
+            <h3>Historial de Tickets</h3>
+            <div class="acciones">
+                <input type="text" [(ngModel)]="busquedaCliente" (ngModelChange)="filtrarTickets()" placeholder="🔍 Buscar ticket por cliente...">
+                <select [(ngModel)]="estadoFiltro" (ngModelChange)="filtrarTickets()">
+                    <option value="Todos">📋 Todos</option>
+                    <option value="PENDIENTE">⏳ Pendiente</option>
+                    <option value="EN_PROCESO">⚙️ En proceso</option>
+                    <option value="TERMINADO">✅ Terminado</option>
+                    <option value="ENTREGADO">📦 Entregado</option>
+                </select>
+                @if (busquedaCliente || estadoFiltro !== 'Todos') { <button class="btn-limpiar" (click)="limpiarBusqueda()">✕ Limpiar</button> }
+                <button class="btn-recargar" (click)="recargarDatos()" [disabled]="actualizando || cargando">
+                    {{ actualizando ? '⏳ Actualizando...' : '🔄 Actualizar' }}
+                </button>
+            </div>
+
+            @if (cargando) { <div class="loading">⏳ Cargando tickets...</div> }
+            @if (errorCarga && !cargando) { <div class="error">❌ {{ mensajeError }}</div> }
+
+            @if (!cargando && !errorCarga) {
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>ID</th><th>Cliente</th><th>Marca</th><th>Modelo</th><th>Tipo</th><th>Serie</th><th>Descripción</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            @for (ticket of ticketsFiltrados; track ticket.id) {
+                                <tr>
+                                    <td><strong>#{{ ticket.id }}</strong></td><td>{{ ticket.cliente }}</td><td>{{ ticket.marca }}</td><td>{{ ticket.modelo }}</td>
+                                    <td>{{ ticket.tipoEquipo }}</td><td>{{ ticket.numeroSerie }}</td><td class="descripcion-cell">{{ ticket.descripcion }}</td><td>{{ ticket.fecha }}</td>
+                                    <td><span class="estado" [ngClass]="getEstadoClass(ticket.estado)">{{ textoEstado(ticket.estado) }}</span></td>
+                                    <td>
+                                        @if (tieneOrden(ticket.id)) {
+                                            <button class="btn-ver-orden" (click)="abrirModalDetalle(ticket)">📋 Ver Orden #OT-{{ getOrdenId(ticket.id) }}</button>
+                                        } @else { <button class="btn-orden" (click)="abrirModalOrden(ticket)">Crear Orden</button> }
+                                    </td>
+                                </tr>
+                            }
+                            @if (ticketsFiltrados.length === 0) { <tr><td colspan="10" style="text-align:center;padding:30px;">📭 No se encontraron tickets</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (mostrarModalOrden) {
+    <div class="modal-overlay" (click)="cerrarModalOrden()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header"><h3>📋 Crear Orden de Trabajo</h3><button class="btn-close" (click)="cerrarModalOrden()">✕</button></div>
+            @if (ticketSeleccionado) {
+                <div class="ticket-info">
+                    <div class="info-grid">
+                        <div class="info-item"><span class="label">Cliente:</span><span class="value">{{ ticketSeleccionado.cliente }}</span></div>
+                        <div class="info-item"><span class="label">Marca:</span><span class="value">{{ ticketSeleccionado.marca }}</span></div>
+                        <div class="info-item"><span class="label">Modelo:</span><span class="value">{{ ticketSeleccionado.modelo }}</span></div>
+                        <div class="info-item"><span class="label">Tipo:</span><span class="value">{{ ticketSeleccionado.tipoEquipo }}</span></div>
+                        <div class="info-item"><span class="label">Serie:</span><span class="value">{{ ticketSeleccionado.numeroSerie }}</span></div>
+                        <div class="info-item full-width"><span class="label">Falla:</span><span class="value descripcion-falla">{{ ticketSeleccionado.descripcion }}</span></div>
+                    </div>
+                </div>
+            }
+            <div class="formulario-orden">
+                <div class="form-group form-group-full">
+                    <label>🔧 Técnico Asignado</label>
+                    <select [(ngModel)]="orden.id_tecnico">
+                        <option value="" disabled selected>Seleccione un técnico...</option>
+                        @for (tecnico of tecnicos; track tecnico.id) { <option [value]="tecnico.id">👨‍🔧 {{ tecnico.nombreCompleto }}</option> }
+                    </select>
+                    @if (cargandoTecnicos) { <small class="loading-text">⏳ Cargando técnicos...</small> }
+                </div>
+                <div class="flujo-estados"><p class="flujo-titulo">📊 La orden iniciará en estado:</p><span class="paso-activo-grande">⏳ PENDIENTE</span></div>
+            </div>
+            @if (errorCrear) { <div class="alerta-error-modal">⚠️ {{ errorCrear }}</div> }
+            <div class="botones">
+                <button class="cancelar" (click)="cerrarModalOrden()">Cancelar</button>
+                <button class="guardar" (click)="guardarOrden()" [disabled]="creandoOrden || !orden.id_tecnico">{{ creandoOrden ? '⏳ Creando...' : '📋 Crear Orden' }}</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (mostrarModalDetalle) {
+    <div class="modal-overlay" (click)="cerrarModalDetalle()">
+        <div class="modal-card modal-detalle" (click)="$event.stopPropagation()">
+            <div class="modal-header-detalle">
+                <div class="detalle-header-icon">📋</div>
+                <div class="detalle-header-text"><h3>Orden #OT-{{ getOrdenId(ticketDetalle?.id) }}</h3><span class="detalle-estado" [ngClass]="getEstadoClass(ordenDetalle?.estado || 'PENDIENTE')">{{ textoEstado(ordenDetalle?.estado || 'PENDIENTE') }}</span></div>
+                <button class="btn-close" (click)="cerrarModalDetalle()">✕</button>
+            </div>
+            @if (ticketDetalle) {
+                <div class="detalle-contenido">
+                    <div class="detalle-seccion"><h4>👤 Datos del Cliente</h4><div class="detalle-grid"><div class="detalle-item"><span class="detalle-label">Cliente</span><span class="detalle-value">{{ ticketDetalle.cliente }}</span></div><div class="detalle-item"><span class="detalle-label">ID Cliente</span><span class="detalle-value">#{{ ticketDetalle.idPersona }}</span></div></div></div>
+                    <div class="detalle-seccion"><h4>💻 Datos del Equipo</h4><div class="detalle-grid"><div class="detalle-item"><span class="detalle-label">Marca</span><span class="detalle-value">{{ ticketDetalle.marca }}</span></div><div class="detalle-item"><span class="detalle-label">Modelo</span><span class="detalle-value">{{ ticketDetalle.modelo }}</span></div><div class="detalle-item"><span class="detalle-label">Tipo</span><span class="detalle-value">{{ ticketDetalle.tipoEquipo }}</span></div><div class="detalle-item"><span class="detalle-label">N° Serie</span><span class="detalle-value">{{ ticketDetalle.numeroSerie }}</span></div></div></div>
+                    <div class="detalle-seccion"><h4>🔧 Falla Reportada</h4><div class="detalle-falla">{{ ticketDetalle.descripcion }}</div></div>
+                    <div class="detalle-seccion"><h4>📋 Información de la Orden</h4><div class="detalle-grid"><div class="detalle-item"><span class="detalle-label">N° Orden</span><span class="detalle-value detalle-orden-num">#OT-{{ getOrdenId(ticketDetalle.id) }}</span></div><div class="detalle-item"><span class="detalle-label">Estado</span><span class="estado" [ngClass]="getEstadoClass(ordenDetalle?.estado || 'PENDIENTE')">{{ textoEstado(ordenDetalle?.estado || 'PENDIENTE') }}</span></div><div class="detalle-item"><span class="detalle-label">Técnico</span><span class="detalle-value">{{ ordenDetalle?.nombreTecnico || ordenDetalle?.tecnico || 'Pendiente' }}</span></div><div class="detalle-item"><span class="detalle-label">Fecha Inicio</span><span class="detalle-value">{{ ordenDetalle?.fechaInicio || ordenDetalle?.fecha_inicio || 'Pendiente' }}</span></div></div></div>
+                    <div class="detalle-seccion"><h4>📊 Progreso</h4><div class="timeline"><div class="timeline-item completado"><div class="timeline-punto"></div><span>⏳ Pendiente</span></div><div class="timeline-linea" [class.completado]="ordenDetalle?.estado === 'EN_PROCESO' || ordenDetalle?.estado === 'TERMINADO' || ordenDetalle?.estado === 'ENTREGADO'"></div><div class="timeline-item" [class.completado]="ordenDetalle?.estado === 'EN_PROCESO' || ordenDetalle?.estado === 'TERMINADO' || ordenDetalle?.estado === 'ENTREGADO'"><div class="timeline-punto"></div><span>⚙️ En Proceso</span></div><div class="timeline-linea" [class.completado]="ordenDetalle?.estado === 'TERMINADO' || ordenDetalle?.estado === 'ENTREGADO'"></div><div class="timeline-item" [class.completado]="ordenDetalle?.estado === 'TERMINADO' || ordenDetalle?.estado === 'ENTREGADO'"><div class="timeline-punto"></div><span>✅ Terminado</span></div><div class="timeline-linea" [class.completado]="ordenDetalle?.estado === 'ENTREGADO'"></div><div class="timeline-item" [class.completado]="ordenDetalle?.estado === 'ENTREGADO'"><div class="timeline-punto"></div><span>📦 Entregado</span></div></div></div>
+                </div>
+            }
+            <div class="botones"><button class="cancelar" (click)="cerrarModalDetalle()">Cerrar</button><button class="guardar" (click)="irAOrdenesTrabajo()">📋 Ir a Órdenes de Trabajo</button></div>
+        </div>
+    </div>
+}

@@ -1,0 +1,97 @@
+<div class="pruebas-page">
+    <div class="header">
+        <div>
+            <h1>🧪 Pruebas de Funcionamiento</h1>
+            <p>Órdenes en fase de pruebas para verificar funcionamiento</p>
+        </div>
+        <button class="btn-recargar" (click)="recargar()" [disabled]="cargando">{{ cargando ? '⏳ Cargando...' : '🔄 Actualizar' }}</button>
+    </div>
+
+    <!-- DEBUG -->
+    <div style="background:#fef3c7; padding:8px; margin-bottom:12px; border-radius:8px; font-size:12px;">
+        ID Técnico: {{ idTecnico }} | Órdenes: {{ ordenes.length }} | Cargando: {{ cargando }}
+    </div>
+
+    @if (cargando) { <div class="loading"><div class="spinner"></div><p>Cargando órdenes...</p></div> }
+    @if (error && !cargando) { <div class="alerta-error">⚠️ {{ error }}</div> }
+    @if (exito && !cargando) { <div class="alerta-exito">✅ {{ exito }}</div> }
+
+    @if (!cargando && ordenes.length === 0) {
+        <div class="vacio"><span>🧪</span><p>No hay órdenes disponibles</p></div>
+    }
+
+    @if (!cargando && ordenes.length > 0) {
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Ticket</th><th>Cliente</th><th>Equipo</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
+                <tbody>
+                    @for (o of ordenes; track o.id) {
+                        <tr>
+                            <td><strong>{{ o.ticket }}</strong></td>
+                            <td>{{ o.cliente }}</td>
+                            <td>{{ o.equipo }}</td>
+                            <td>{{ formatearFecha(o.fechaInicio) }}</td>
+                            <td><span class="estado-badge" [ngClass]="'estado-' + ((o.estado || '').toLowerCase())">{{ o.estado }}</span></td>
+                            <td><button class="btn-probar" (click)="seleccionarOrden(o)">🧪 Probar</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (ordenSeleccionada) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header"><h2>🧪 {{ ordenSeleccionada.ticket }}</h2><button class="btn-close" (click)="cerrarModal()">✕</button></div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <p><strong>Equipo:</strong> {{ ordenSeleccionada.equipo }}</p>
+                    <p><strong>Cliente:</strong> {{ ordenSeleccionada.cliente }}</p>
+                </div>
+
+                <h3 class="pruebas-titulo">🔍 Pruebas a Realizar</h3>
+                
+                <div class="pruebas-lista">
+                    @for (prueba of pruebas; track prueba.id) {
+                        <div class="prueba-item" [class.ok]="prueba.resultado === 'ok'" [class.falla]="prueba.resultado === 'falla'">
+                            <span class="prueba-nombre">{{ prueba.nombre }}</span>
+                            <div class="prueba-botones">
+                                <button class="btn-resultado ok" [class.activo]="prueba.resultado === 'ok'" (click)="setResultado(prueba.id, 'ok')">✅ OK</button>
+                                <button class="btn-resultado falla" [class.activo]="prueba.resultado === 'falla'" (click)="setResultado(prueba.id, 'falla')">❌ Falla</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="progreso">
+                    <div class="progreso-bar"><div class="progreso-fill" [style.width.%]="((pruebasOk + pruebasFalla) / pruebas.length) * 100"></div></div>
+                    <div class="progreso-texto">
+                        <span>✅ {{ pruebasOk }} OK</span><span>❌ {{ pruebasFalla }} Fallas</span><span>⏳ {{ pruebas.length - pruebasOk - pruebasFalla }} Pendientes</span>
+                    </div>
+                </div>
+
+                @if (todasCompletadas) {
+                    <div class="resumen-pruebas" [class.con-fallas]="hayFallas">
+                        @if (hayFallas) { ⚠️ Se detectaron fallas. El equipo volverá a reparación. }
+                        @else { ✅ Todas las pruebas pasaron. El equipo está listo para entrega. }
+                    </div>
+                }
+
+                <div class="form-grupo">
+                    <label>📝 Observaciones</label>
+                    <textarea rows="2" placeholder="Anota cualquier detalle relevante..." [(ngModel)]="observaciones"></textarea>
+                </div>
+
+                @if (error && !exito) { <div class="alerta-error">⚠️ {{ error }}</div> }
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                <button class="btn-guardar" (click)="guardar()" [disabled]="procesando || !todasCompletadas">
+                    {{ procesando ? '⏳ Guardando...' : '💾 Guardar Resultados' }}
+                </button>
+            </div>
+        </div>
+    </div>
+}

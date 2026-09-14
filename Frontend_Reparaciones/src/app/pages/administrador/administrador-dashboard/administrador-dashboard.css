@@ -1,0 +1,315 @@
+/* ============================================================
+   ADMINISTRADOR - DASHBOARD
+   Diseño Limpio y Profesional
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard {
+  padding: 24px;
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ==================== NAVBAR ==================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.bienvenida h1 {
+  font-size: 22px;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+}
+
+.bienvenida p {
+  color: #64748b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-recargar {
+  padding: 10px 20px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-recargar:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.perfil img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.perfil h3 {
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.perfil span {
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* ==================== LOADING & ERROR ==================== */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  background: #fff;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 15px;
+  border: 1px solid #e2e8f0;
+}
+
+.error-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.error-box p { margin: 0; }
+
+.error-box button {
+  padding: 6px 14px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ==================== ESTADÍSTICAS ==================== */
+.estadisticas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px 16px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card > .icono {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.card > div:last-child h2 {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.card > div:last-child h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.card > div:last-child p {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.card.reparaciones { border-top: 4px solid #3b82f6; }
+.card.reparaciones > div:last-child h1 { color: #3b82f6; }
+
+.card.ingresos { border-top: 4px solid #10b981; }
+.card.ingresos > div:last-child h1 { color: #10b981; }
+
+.card.clientes { border-top: 4px solid #8b5cf6; }
+.card.clientes > div:last-child h1 { color: #8b5cf6; }
+
+.card.tecnicos { border-top: 4px solid #f59e0b; }
+.card.tecnicos > div:last-child h1 { color: #f59e0b; }
+
+/* ==================== TABLA ==================== */
+.tabla-container {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
+}
+
+.tabla-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tabla-header h2 {
+  font-size: 18px;
+  color: #0f172a;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.tabla-header p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 750px;
+}
+
+thead {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+th {
+  color: #fff;
+  padding: 12px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+  color: #334155;
+  text-align: center;
+}
+
+tbody tr:hover td {
+  background: #f8fafc;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==================== BADGES DE ESTADO ==================== */
+.estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pendiente { background: #fef3c7; color: #92400e; }
+.proceso { background: #dbeafe; color: #1e40af; }
+.terminado { background: #d1fae5; color: #065f46; }
+.cancelado { background: #fee2e2; color: #991b1b; }
+
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #94a3b8;
+}
+
+.empty-state span {
+  font-size: 52px;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 15px;
+  color: #64748b;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+  .estadisticas { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .dashboard { padding: 14px; }
+  .navbar { flex-direction: column; align-items: stretch; padding: 16px; gap: 12px; }
+  .navbar-right { flex-direction: column; width: 100%; }
+  .btn-recargar { width: 100%; justify-content: center; }
+  .perfil { justify-content: center; }
+  .estadisticas { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card { padding: 16px; }
+  .card > div:last-child h1 { font-size: 22px; }
+  th, td { padding: 10px 12px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .estadisticas { grid-template-columns: 1fr; }
+  .bienvenida h1 { font-size: 20px; }
+}

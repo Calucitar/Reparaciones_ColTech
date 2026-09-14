@@ -1,0 +1,130 @@
+<div class="reporte-page">
+
+  <div class="header">
+    <div>
+      <h1>📝 Generar reporte de falla</h1>
+      <p>Completa el formulario para registrar tu solicitud de reparación</p>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE ÉXITO -->
+  @if (enviado) {
+    <div class="exito-card">
+      <div class="exito-icono">✅</div>
+      <h2>¡Reporte registrado exitosamente!</h2>
+      <p>Tu código de operación es:</p>
+      <div class="codigo">{{ codigoOperacion }}</div>
+      <p class="sub">Guarda este código para hacer seguimiento de tu solicitud.</p>
+      
+      <div class="resumen-reporte">
+        <p><strong>Equipo:</strong> {{ reporte.marca }} {{ reporte.modelo }}</p>
+        <p><strong>Tipo:</strong> {{ reporte.tipoEquipo }}</p>
+        <p><strong>N° Serie:</strong> {{ reporte.numeroSerie }}</p>
+      </div>
+      
+      <button type="button" class="btn-nuevo" (click)="nuevoReporte()">+ Nuevo reporte</button>
+    </div>
+  }
+
+  <!-- FORMULARIO -->
+  @if (!enviado) {
+    @if (error) {
+      <div class="alerta-error" style="cursor: pointer;" (click)="error = ''">⚠️ {{ error }} (Click para cerrar)</div>
+    }
+    
+    <div class="form-card">
+      <div class="form-grid">
+        
+        <!-- TIPO DE EQUIPO -->
+        <div class="form-grupo">
+          <label>Tipo de equipo *</label>
+          <select [(ngModel)]="tipoEquipoSeleccionado" (ngModelChange)="onTipoEquipoChange()" class="form-select" name="tipoEquipo">
+            <option value="" disabled selected>Selecciona el tipo</option>
+            <option value="Computadora">Computadora de escritorio</option>
+            <option value="Laptop">Laptop</option>
+          </select>
+        </div>
+
+        <!-- NÚMERO DE SERIE -->
+        <div class="form-grupo">
+          <label>Número de serie *</label>
+          <input 
+            type="text" 
+            placeholder="Ej: SN-2024-001" 
+            [(ngModel)]="reporte.numeroSerie" 
+            name="numeroSerie"
+            style="text-transform: uppercase;"
+            maxlength="50">
+        </div>
+
+        <!-- MARCA -->
+        <div class="form-grupo">
+          <label>Marca *</label>
+          <select [(ngModel)]="marcaSeleccionada" (ngModelChange)="onMarcaChange()" class="form-select" name="marcaSelect">
+            <option value="" disabled selected>Selecciona una marca</option>
+            <option value="HP">HP</option>
+            <option value="Lenovo">Lenovo</option>
+            <option value="Dell">Dell</option>
+            <option value="Asus">Asus</option>
+            <option value="Acer">Acer</option>
+            <option value="Apple">Apple</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Otras">Otras</option>
+          </select>
+        </div>
+
+        <!-- OTRA MARCA -->
+        @if (marcaSeleccionada === 'Otras') {
+          <div class="form-grupo">
+            <label>Especifique otra marca *</label>
+            <input 
+              type="text" 
+              placeholder="¿Qué marca es?" 
+              [(ngModel)]="otraMarca" 
+              (ngModelChange)="actualizarMarcaReporte()" 
+              name="otraMarca"
+              maxlength="50">
+          </div>
+        }
+
+        <!-- MODELO -->
+        <div class="form-grupo">
+          <label>Modelo *</label>
+          <input 
+            type="text" 
+            placeholder="Ej: Pavilion 15, ThinkPad X1" 
+            [(ngModel)]="reporte.modelo" 
+            name="modelo"
+            maxlength="50">
+        </div>
+
+        <!-- DESCRIPCIÓN DE LA FALLA -->
+        <div class="form-grupo full">
+          <label>Descripción de la falla *</label>
+          <textarea 
+            rows="4" 
+            placeholder="Describe detalladamente el problema del equipo (mínimo 10 caracteres)..." 
+            [(ngModel)]="reporte.descripcionFalla" 
+            name="descripcionFalla"
+            maxlength="500"></textarea>
+          <small class="caracteres-restantes">
+            {{ reporte.descripcionFalla.length }}/500 caracteres
+          </small>
+        </div>
+
+      </div>
+
+      <!-- BOTÓN ENVIAR -->
+      <div class="form-actions">
+        <button type="button" class="btn-enviar" (click)="confirmarEnvio()" [disabled]="cargando">
+          @if (cargando) {
+            <span class="spinner-btn"></span>
+            Enviando...
+          } @else {
+            📤 Enviar reporte
+          }
+        </button>
+      </div>
+    </div>
+  }
+</div>

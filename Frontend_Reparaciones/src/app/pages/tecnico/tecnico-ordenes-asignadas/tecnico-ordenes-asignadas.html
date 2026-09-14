@@ -1,0 +1,92 @@
+<div class="ordenes-container">
+    <div class="header">
+        <div>
+            <h1>📋 Órdenes Asignadas</h1>
+            <p>Gestiona las órdenes de trabajo asignadas a tu cargo</p>
+        </div>
+        <button class="btn-recargar" (click)="recargar()" [disabled]="cargando">
+            {{ cargando ? '⏳ Cargando...' : '🔄 Actualizar' }}
+        </button>
+    </div>
+
+    <div class="debug-info">
+        ID Técnico: {{ idTecnico }} | Total: {{ ordenes.length }} | Cargando: {{ cargando }}
+    </div>
+
+    @if (error && !cargando) {
+        <div class="alerta-error">
+            <span>⚠️ {{ error }}</span>
+            <button (click)="error = ''">✕</button>
+        </div>
+    }
+
+    @if (!cargando && ordenes.length > 0) {
+        <div class="filtros">
+            <input type="text" [(ngModel)]="busqueda" placeholder="🔍 Buscar por ticket, cliente, equipo...">
+            <select [(ngModel)]="filtroEstado">
+                <option value="TODOS">📋 Todos</option>
+                <option value="PENDIENTE">⏳ Pendiente</option>
+                <option value="EN_PROCESO">⚙️ En Proceso</option>
+                <option value="TERMINADO">✅ Terminado</option>
+                <option value="ENTREGADO">📦 Entregado</option>
+            </select>
+        </div>
+    }
+
+    @if (cargando) {
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Cargando órdenes...</p>
+        </div>
+    }
+
+    @if (!cargando && ordenes.length === 0) {
+        <div class="empty">
+            <span class="empty-icon">📭</span>
+            <p>No tienes órdenes asignadas</p>
+        </div>
+    }
+
+    @if (!cargando && ordenesFiltradas.length > 0) {
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Cliente</th>
+                        <th>Equipo</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (orden of ordenesFiltradas; track orden.idOrden) {
+                        <tr>
+                            <td><strong>OT-{{ orden.idOrden }}</strong></td>
+                            <td>{{ orden.nombreCliente || orden.cliente || 'Sin cliente' }}</td>
+                            <td>
+                                <div class="equipo-cell">
+                                    <span class="equipo-marca">{{ orden.marca || '-' }}</span>
+                                    <span class="equipo-modelo">{{ orden.modelo || '-' }}</span>
+                                </div>
+                            </td>
+                            <td>{{ getFecha(orden) }}</td>
+                            <td>
+                                <span class="estado" [ngClass]="claseEstado(orden.estado)">
+                                    {{ textoEstado(orden.estado) }}
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!cargando && ordenes.length > 0 && ordenesFiltradas.length === 0) {
+        <div class="empty">
+            <span class="empty-icon">🔍</span>
+            <p>No se encontraron órdenes con ese filtro</p>
+        </div>
+    }
+</div>

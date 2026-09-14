@@ -1,0 +1,134 @@
+<div class="dashboard">
+
+    <!-- NAVBAR SUPERIOR -->
+    <div class="navbar">
+        <div class="bienvenida">
+            <h1>Bienvenido, Administrador 👋</h1>
+            <p>Gestiona el sistema de reparaciones fácilmente</p>
+        </div>
+        <div class="navbar-right">
+            <button class="btn-recargar" (click)="recargar()">🔄 Actualizar</button>
+            <div class="perfil">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="perfil">
+                <div>
+                    <h3>Administrador</h3>
+                    <span>Online</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    @if (cargando) {
+        <div class="loading">⏳ Cargando dashboard...</div>
+    }
+
+    <!-- Error -->
+    @if (error && !cargando) {
+        <div class="error-box">
+            <p>⚠️ {{ error }}</p>
+            <button (click)="recargar()">Reintentar</button>
+        </div>
+    }
+
+    <!-- ESTADISTICAS -->
+    @if (!cargando && !error) {
+        <div class="estadisticas">
+            
+            <!-- Reparaciones -->
+            <div class="card reparaciones">
+                <div class="icono-wrapper">
+                    <span class="icono">💻</span>
+                </div>
+                <div class="card-content">
+                    <h2>Reparaciones Totales</h2>
+                    <h1>{{ estadisticas.reparaciones }}</h1>
+                    <p>Pendientes: {{ estadisticas.pendientes }}</p>
+                </div>
+            </div>
+
+            <!-- Ingresos -->
+            <div class="card ingresos">
+                <div class="icono-wrapper">
+                    <span class="icono">💰</span>
+                </div>
+                <div class="card-content">
+                    <h2>Ingresos</h2>
+                    <h1>{{ formatearMonto(estadisticas.ingresos) }}</h1>
+                    <p>Ganancias acumuladas</p>
+                </div>
+            </div>
+
+            <!-- Clientes -->
+            <div class="card clientes">
+                <div class="icono-wrapper">
+                    <span class="icono">👥</span>
+                </div>
+                <div class="card-content">
+                    <h2>Clientes</h2>
+                    <h1>{{ estadisticas.clientes }}</h1>
+                    <p>Registrados</p>
+                </div>
+            </div>
+
+            <!-- Técnicos -->
+            <div class="card tecnicos">
+                <div class="icono-wrapper">
+                    <span class="icono">🔧</span>
+                </div>
+                <div class="card-content">
+                    <h2>Técnicos</h2>
+                    <h1>{{ estadisticas.tecnicos }}</h1>
+                    <p>Activos</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- TABLA -->
+    @if (!cargando && !error) {
+        <div class="tabla-container">
+            <div class="tabla-header">
+                <div>
+                    <h2>Últimas Reparaciones</h2>
+                    <p>Resumen de trabajos recientes</p>
+                </div>
+            </div>
+
+            @if (ultimasReparaciones.length === 0) {
+                <div class="empty-state">
+                    <span>📭</span>
+                    <p>No hay reparaciones registradas</p>
+                </div>
+            } @else {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Equipo</th>
+                            <th>Estado</th>
+                            <th>Técnico</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (r of ultimasReparaciones; track r.id) {
+                            <tr>
+                                <td>{{ r.cliente }}</td>
+                                <td>{{ r.equipo }}</td>
+                                <td>
+                                    <span class="estado" [ngClass]="getEstadoClass(r.estado)">
+                                        {{ r.estado }}
+                                    </span>
+                                </td>
+                                <td>{{ r.tecnico }}</td>
+                                <td>{{ r.fecha | date:'dd/MM/yyyy' }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+
+</div>

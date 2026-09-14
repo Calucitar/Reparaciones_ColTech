@@ -1,0 +1,46 @@
+<div class="cliente-layout">
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>Panel Cliente</h2>
+            <p>Sistema de Reparaciones</p>
+        </div>
+
+        <div class="user-info">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar Cliente">
+            <span>{{ nombreCliente }}</span>
+            <p>Cliente</p>
+        </div>
+
+        <nav class="nav-menu">
+            <a routerLink="/cliente/dashboard" routerLinkActive="active">
+                <span class="icon">📊</span><span>Dashboard</span>
+            </a>
+            <a routerLink="/cliente/generar-solicitud" routerLinkActive="active">
+                <span class="icon">📝</span><span>Generar Solicitud</span>
+            </a>
+            <a routerLink="/cliente/estado-solicitud" routerLinkActive="active">
+                <span class="icon">📋</span><span>Estado Solicitudes</span>
+            </a>
+            <a routerLink="/cliente/cotizacion" routerLinkActive="active">
+                <span class="icon">💰</span><span>Cotizaciones</span>
+            </a>
+            <a routerLink="/cliente/pago" routerLinkActive="active">
+                <span class="icon">💳</span><span>Pagos</span>
+            </a>
+            <a routerLink="/cliente/notificacion" routerLinkActive="active">
+                <span class="icon">🔔</span><span>Notificaciones</span>
+            </a>
+            <a routerLink="/cliente/perfil" routerLinkActive="active">
+                <span class="icon">👤</span><span>Mi Perfil</span>
+            </a>
+        </nav>
+
+        <div class="logout-container">
+            <button class="btn-logout" (click)="cerrarSesion()">🚪 Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

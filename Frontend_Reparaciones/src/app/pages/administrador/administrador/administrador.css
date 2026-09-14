@@ -1,0 +1,335 @@
+/* =========================
+   CONTENEDOR ANALITICAS
+========================= */
+
+.analiticas {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 30px;
+    align-items: stretch;
+}
+
+/* =========================
+   TARJETAS
+========================= */
+
+.analitica-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.analitica-card:hover {
+    transform: translateY(-6px);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.card-header h2 {
+    font-size: 24px;
+    color: #111827;
+    margin-bottom: 5px;
+}
+
+.card-header p {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badge {
+    padding: 7px 14px;
+    border-radius: 30px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.success {
+    background: #22c55e;
+}
+
+.primary {
+    background: #3b82f6;
+}
+
+.warning {
+    background: #f59e0b;
+}
+
+/* =========================
+   CIRCULO
+========================= */
+
+.circle-container {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0;
+}
+
+.circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #22c55e 0% 78%,
+        #e5e7eb 78% 100%
+    );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-content {
+    width: 135px;
+    height: 135px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+.circle-content h1 {
+    font-size: 38px;
+    color: #111827;
+    margin: 0;
+}
+
+.circle-content span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* =========================
+   FOOTER INFO
+========================= */
+
+.info-footer {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.mini-info {
+    flex: 1;
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 18px;
+    text-align: center;
+}
+
+.mini-info strong {
+    display: block;
+    font-size: 24px;
+    color: #111827;
+}
+
+.mini-info span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* =========================
+   TECNICOS
+========================= */
+
+.tecnico-item {
+    margin-bottom: 22px;
+}
+
+.tecnico-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tecnico-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tecnico-user h4 {
+    margin: 0;
+    color: #111827;
+}
+
+.tecnico-user span {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+/* =========================
+   AVATARES
+========================= */
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar1 {
+    background: #3b82f6;
+}
+
+.avatar2 {
+    background: #f59e0b;
+}
+
+.avatar3 {
+    background: #8b5cf6;
+}
+
+/* =========================
+   BARRAS
+========================= */
+
+.barra {
+    width: 100%;
+    height: 14px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    border-radius: 20px;
+}
+
+.fill1 {
+    width: 95%;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.fill2 {
+    width: 82%;
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.fill3 {
+    width: 90%;
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
+
+/* =========================
+   GANANCIAS
+========================= */
+
+.ganancia-box {
+    text-align: center;
+    margin: 35px 0;
+}
+
+.ganancia-box h1 {
+    font-size: 42px;
+    color: #16a34a;
+    margin-bottom: 10px;
+}
+
+.ganancia-box span {
+    color: #6b7280;
+}
+
+.ganancias-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.mini-card {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+}
+
+.mini-card strong {
+    display: block;
+    font-size: 24px;
+    color: #111827;
+}
+
+.mini-card span {
+    color: #6b7280;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+    .analiticas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .analiticas {
+        grid-template-columns: 1fr;
+    }
+    
+    .circle {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .circle-content {
+        width: 110px;
+        height: 110px;
+    }
+    
+    .circle-content h1 {
+        font-size: 30px;
+    }
+    
+    .ganancia-box h1 {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .analitica-card {
+        padding: 18px;
+    }
+    
+    .card-header h2 {
+        font-size: 20px;
+    }
+    
+    .info-footer {
+        flex-direction: column;
+    }
+    
+    .ganancias-grid {
+        grid-template-columns: 1fr;
+    }
+}

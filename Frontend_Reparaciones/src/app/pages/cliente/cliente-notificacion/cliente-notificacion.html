@@ -1,0 +1,73 @@
+<div class="notif-page">
+
+  <div class="header">
+    <div>
+      <h1>🔔 Notificaciones</h1>
+      <p>Actualizaciones de tus solicitudes de reparación</p>
+    </div>
+    <div class="header-acciones">
+      @if (noLeidas() > 0) {
+        <button class="btn-leer-todo" (click)="marcarTodasLeidas()">
+          ✅ Marcar todas como leídas ({{ noLeidas() }})
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (cargando()) {
+    <div class="loading">
+      <span class="spinner"></span>
+      <p>Cargando notificaciones...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="alerta-error">⚠️ {{ error() }}</div>
+  }
+
+  <!-- Sin notificaciones -->
+  @if (!cargando() && notificaciones().length === 0) {
+    <div class="empty">
+      <span class="empty-icono">📭</span>
+      <p>No tienes notificaciones</p>
+      <small>Las actualizaciones de tus solicitudes aparecerán aquí</small>
+    </div>
+  }
+
+  <!-- Lista de notificaciones -->
+  @if (notificaciones().length > 0) {
+    <div class="notif-lista">
+      @for (n of notificaciones(); track n.id) {
+        <div 
+          class="notif-item"
+          [class.no-leida]="!n.leida"
+          [class.tipo-estado]="n.tipo === 'estado'"
+          [class.tipo-entrega]="n.tipo === 'entrega'"
+          (click)="marcarLeida(n.id)">
+          
+          <div class="notif-icono">{{ iconoTipo(n.tipo) }}</div>
+          
+          <div class="notif-body">
+            <div class="notif-titulo">
+              {{ n.titulo }}
+              @if (!n.leida) { 
+                <span class="badge-nueva">Nueva</span> 
+              }
+            </div>
+            <p class="notif-mensaje">{{ n.mensaje }}</p>
+            <span class="notif-fecha">{{ formatearFecha(n.fecha) }}</span>
+          </div>
+          
+          <button 
+            class="btn-eliminar" 
+            (click)="eliminarNotificacion(n.id); $event.stopPropagation()"
+            title="Eliminar notificación">
+            🗑️
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

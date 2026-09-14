@@ -1,0 +1,195 @@
+<div class="contenedor-pagos">
+  
+  <div class="header">
+    <div>
+      <h1>💳 Gestión de Pagos</h1>
+      <p>Administra y supervisa los pagos realizados</p>
+    </div>
+    <button class="btn-recargar" (click)="recargar()">🔄 Actualizar</button>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats">
+    <div class="stat">
+      <span class="num">{{ totalPagos }}</span>
+      <span class="lbl">Total</span>
+    </div>
+    <div class="stat pendiente">
+      <span class="num">{{ totalPendientes }}</span>
+      <span class="lbl">Pendientes</span>
+    </div>
+    <div class="stat aprobado">
+      <span class="num">{{ totalAprobados }}</span>
+      <span class="lbl">Aprobados</span>
+    </div>
+    <div class="stat rechazado">
+      <span class="num">{{ totalRechazados }}</span>
+      <span class="lbl">Rechazados</span>
+    </div>
+    <div class="stat monto">
+      <span class="num">{{ formatearMonto(montoTotalAprobado) }}</span>
+      <span class="lbl">Monto Aprobado</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (cargando) {
+    <div class="loading">⏳ Cargando pagos...</div>
+  }
+
+  <!-- Error -->
+  @if (error && !cargando) {
+    <div class="error-box">
+      <p>⚠️ {{ error }}</p>
+      <button (click)="recargar()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Éxito -->
+  @if (exito && !cargando) {
+    <div class="exito-box">
+      <p>{{ exito }}</p>
+    </div>
+  }
+
+  <!-- Filtros -->
+  @if (!cargando) {
+    <div class="filtros">
+      <input type="text" [(ngModel)]="busqueda" (input)="aplicarFiltros()" 
+             placeholder="🔍 Buscar por cliente, ticket o ID...">
+      <div class="btns">
+        <button [class.activo]="filtroEstado === 'TODOS'" (click)="filtrarPorEstado('TODOS')">Todos</button>
+        <button [class.activo]="filtroEstado === 'Pendiente'" (click)="filtrarPorEstado('Pendiente')">Pendientes</button>
+        <button [class.activo]="filtroEstado === 'Aprobado'" (click)="filtrarPorEstado('Aprobado')">Aprobados</button>
+        <button [class.activo]="filtroEstado === 'Rechazado'" (click)="filtrarPorEstado('Rechazado')">Rechazados</button>
+      </div>
+    </div>
+  }
+
+  <!-- Tabla -->
+  @if (!cargando && !error) {
+    @if (pagosFiltrados.length === 0) {
+      <div class="vacio">
+        <span>📭</span>
+        <p>No se encontraron pagos</p>
+      </div>
+    } @else {
+      <div class="tabla">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ticket</th>
+              <th>Cliente</th>
+              <th>Monto</th>
+              <th>Método</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (pago of pagosFiltrados; track pago.id) {
+              <tr>
+                <td><strong>#{{ pago.id }}</strong></td>
+                <td><span class="ot-badge">{{ pago.ticket }}</span></td>
+                <td>{{ pago.cliente }}</td>
+                <td><strong>{{ formatearMonto(pago.monto) }}</strong></td>
+                <td>{{ pago.metodo }}</td>
+                <td>{{ formatearFecha(pago.fecha) }}</td>
+                <td>
+                  <span class="badge" [class]="pago.estado === 'Aprobado' ? 'aprobado' : pago.estado === 'Pendiente' ? 'pendiente' : 'rechazado'">
+                    {{ pago.estado }}
+                  </span>
+                </td>
+                <td>
+                  <div class="acciones">
+                    <button class="btn-ver" (click)="abrirDetalle(pago)">👁️ Ver</button>
+                    @if (pago.estado === 'Pendiente') {
+                      <button class="btn-aprobar" (click)="aprobarPago(pago.id)">✅</button>
+                      <button class="btn-rechazar" (click)="rechazarPago(pago.id)">❌</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  <!-- Modal Detalle -->
+  @if (modalAbierto && pagoSeleccionado) {
+    <div class="modal-overlay" (click)="cerrarDetalle()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <h2>📄 Detalle del Pago #{{ pagoSeleccionado.id }}</h2>
+          <button class="btn-cerrar" (click)="cerrarDetalle()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="detalle-grid">
+            <div class="detalle-item">
+              <label>Cliente</label>
+              <span class="valor-destacado">{{ pagoSeleccionado.cliente }}</span>
+            </div>
+            <div class="detalle-item">
+              <label>Ticket</label>
+              <span>{{ pagoSeleccionado.ticket }}</span>
+            </div>
+            <div class="detalle-item">
+              <label>Monto</label>
+              <span class="monto-destacado">{{ formatearMonto(pagoSeleccionado.monto) }}</span>
+            </div>
+            <div class="detalle-item">
+              <label>Método</label>
+              <span>{{ pagoSeleccionado.metodo }}</span>
+            </div>
+            <div class="detalle-item">
+              <label>Fecha</label>
+              <span>{{ formatearFecha(pagoSeleccionado.fecha) }}</span>
+            </div>
+            <div class="detalle-item">
+              <label>Estado</label>
+              <span class="badge" [class]="pagoSeleccionado.estado === 'Aprobado' ? 'aprobado' : pagoSeleccionado.estado === 'Pendiente' ? 'pendiente' : 'rechazado'">
+                {{ pagoSeleccionado.estado }}
+              </span>
+            </div>
+            @if (pagoSeleccionado.izipayOrderId) {
+              <div class="detalle-item">
+                <label>Transacción</label>
+                <span>{{ pagoSeleccionado.izipayOrderId }}</span>
+              </div>
+            }
+            @if (pagoSeleccionado.tarjetaMarca) {
+              <div class="detalle-item">
+                <label>Tarjeta</label>
+                <span>{{ pagoSeleccionado.tarjetaMarca }}</span>
+              </div>
+            }
+          </div>
+
+          @if (pagoSeleccionado.descripcion) {
+            <h3>📝 Descripción</h3>
+            <div class="notas">{{ pagoSeleccionado.descripcion }}</div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          @if (pagoSeleccionado.estado === 'Pendiente') {
+            <button class="btn-aprobar-modal" (click)="aprobarPago(pagoSeleccionado.id); cerrarDetalle()">
+              ✅ Aprobar Pago
+            </button>
+            <button class="btn-rechazar-modal" (click)="rechazarPago(pagoSeleccionado.id); cerrarDetalle()">
+              ❌ Rechazar Pago
+            </button>
+          }
+          <button class="btn-cerrar-modal" (click)="cerrarDetalle()">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

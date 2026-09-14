@@ -1,0 +1,160 @@
+<div class="devoluciones-page">
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="header-izquierda">
+            <h1>📦 Gestión de Devoluciones</h1>
+            <p>Equipos diagnosticados como irreparables o con cotización rechazada, listos para devolución</p>
+        </div>
+        <div class="header-derecha">
+            <div class="stats-mini">
+                <div class="stat-mini">
+                    <span class="stat-mini-num">{{ equiposIrreparables.length }}</span>
+                    <span class="stat-mini-lbl">Total</span>
+                </div>
+                <div class="stat-mini pendiente">
+                    <span class="stat-mini-num">{{ pendientesNotificar }}</span>
+                    <span class="stat-mini-lbl">Pendientes</span>
+                </div>
+                <div class="stat-mini notificado">
+                    <span class="stat-mini-num">{{ notificados }}</span>
+                    <span class="stat-mini-lbl">Notificados</span>
+                </div>
+            </div>
+            <button class="btn-recargar" (click)="cargarDevoluciones()">
+                <span>🔄</span> Actualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    @if (cargando) {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Cargando devoluciones...</p>
+        </div>
+    }
+
+    <!-- Error -->
+    @if (error && !cargando) {
+        <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <div class="error-content">
+                <h3>Error al cargar</h3>
+                <p>{{ error }}</p>
+            </div>
+            <button class="btn-reintentar" (click)="cargarDevoluciones()">
+                🔄 Reintentar
+            </button>
+        </div>
+    }
+
+    <!-- Tabla -->
+    @if (!cargando && !error) {
+        @if (equiposIrreparables.length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No hay equipos pendientes</h3>
+                <p>Todos los equipos han sido procesados</p>
+            </div>
+        } @else {
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th># Orden</th>
+                            <th>Cliente</th>
+                            <th>Equipo</th>
+                            <th>Técnico</th>
+                            <th>Diagnóstico</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (item of equiposIrreparables; track item.id) {
+                            <tr class="devolucion-row">
+                                <td>
+                                    <span class="orden-badge">#{{ item.id }}</span>
+                                </td>
+                                <td>
+                                    <div class="cliente-cell">
+                                        <div class="cliente-nombre">{{ item.cliente }}</div>
+                                        <div class="cliente-email">{{ item.correoCliente }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="equipo-cell">
+                                        <span class="equipo-icon">💻</span>
+                                        <span>{{ item.equipo }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tecnico-cell">
+                                        <span class="tecnico-avatar">👨‍🔧</span>
+                                        <span>{{ item.tecnico }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="diagnostico-cell">
+                                        <p>{{ item.motivoFalla }}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fecha-badge">
+                                        {{ formatearFecha(item.fechaDiagnostico) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="estado-badge" [class.pendiente]="item.estadoNotificacion === 'Pendiente'"
+                                          [class.notificado]="item.estadoNotificacion === 'Notificado'">
+                                        <span class="estado-dot"></span>
+                                        {{ item.estadoNotificacion === 'Pendiente' ? 'Pendiente' : 'Notificado' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.estadoNotificacion === 'Pendiente') {
+                                        <button class="btn-notificar" (click)="notificarCliente(item.id)">
+                                            <span>📧</span> Notificar
+                                        </button>
+                                    } @else {
+                                        <div class="notificado-confirm">
+                                            <span>✅</span> Listo
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+    <!-- Modal de Confirmación -->
+    @if (mostrarModalConfirmacion) {
+        <div class="modal-overlay" (click)="cerrarModal()">
+            <div class="modal-confirmacion" (click)="$event.stopPropagation()">
+                <div class="modal-icon">📧</div>
+                <h3>Confirmar Notificación</h3>
+                <p>¿Estás seguro de notificar al cliente <strong>{{ clienteSeleccionado?.cliente }}</strong>?</p>
+                <p class="modal-email">{{ clienteSeleccionado?.correoCliente }}</p>
+                <div class="modal-actions">
+                    <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                    <button class="btn-confirmar" (click)="confirmarNotificacion()">
+                        ✅ Enviar Notificación
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Toast de Éxito -->
+    @if (mostrarToast) {
+        <div class="toast-exito">
+            <span>✅</span>
+            <span>{{ mensajeToast }}</span>
+        </div>
+    }
+</div>

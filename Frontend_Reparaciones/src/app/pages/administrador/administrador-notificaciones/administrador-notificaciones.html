@@ -1,0 +1,80 @@
+<div class="contenedor-notificaciones">
+    
+    <div class="encabezado-notificaciones">
+        <div>
+            <h2 class="titulo-seccion">🔔 Centro de Notificaciones</h2>
+            <p class="subtitulo">Monitoreo de actividades en tiempo real</p>
+            @if (noLeidas > 0) {
+                <span class="contador-badge">{{ noLeidas }} sin leer</span>
+            }
+        </div>
+        <div class="encabezado-acciones">
+            <button class="btn-recargar" (click)="recargar()" title="Actualizar">🔄</button>
+            <button class="btn-marcar-todo" (click)="marcarTodasComoLeidas()" [disabled]="noLeidas === 0">
+                ✓ Marcar todo como leído
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    @if (cargando) {
+        <div class="loading">⏳ Cargando notificaciones...</div>
+    }
+
+    <!-- Error -->
+    @if (error && !cargando) {
+        <div class="error-box">
+            <p>{{ error }}</p>
+            <button (click)="recargar()">Reintentar</button>
+        </div>
+    }
+
+    <!-- Éxito -->
+    @if (exito && !cargando) {
+        <div class="exito-box">
+            <p>{{ exito }}</p>
+        </div>
+    }
+
+    <!-- Lista de notificaciones -->
+    @if (!cargando) {
+        @if (notificaciones.length === 0) {
+            <div class="vacio">
+                <span>📭</span>
+                <p>No hay notificaciones</p>
+            </div>
+        } @else {
+            <div class="lista-notificaciones">
+                @for (noti of notificaciones; track noti.id) {
+                    <div class="notificacion-card" [class.no-leida]="!noti.leido">
+                        
+                        <div class="notificacion-icono" [class]="getClaseIcono(noti.tipo)">
+                            <span>{{ getIconoTipo(noti.tipo) }}</span>
+                        </div>
+
+                        <div class="notificacion-contenido">
+                            <div class="notificacion-meta">
+                                <span class="categoria-tag">{{ noti.tipo.toUpperCase() }}</span>
+                                <span class="tiempo">{{ noti.fecha }} {{ noti.hora ? 'a las ' + noti.hora : '' }}</span>
+                            </div>
+                            <h3 class="noti-titulo">{{ noti.titulo }}</h3>
+                            <p class="noti-descripcion">{{ noti.descripcion }}</p>
+                        </div>
+
+                        <div class="notificacion-accion">
+                            @if (!noti.leido) {
+                                <button class="btn-leer" 
+                                        (click)="marcarComoLeida(noti.id)" 
+                                        title="Marcar como leída">
+                                    ●
+                                </button>
+                            } @else {
+                                <span class="leido-check">✓</span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,101 @@
+<div class="page">
+    <div class="header">
+        <div>
+            <h1>🔧 Reparaciones</h1>
+            <p>Registra los trabajos y repuestos utilizados</p>
+        </div>
+        <button class="btn-recargar" (click)="recargar()">🔄 Actualizar</button>
+    </div>
+
+    @if (cargando) { <div class="loading">⏳ Cargando...</div> }
+    @if (error) { <div class="error"><p>⚠️ {{ error }}</p></div> }
+    @if (exito) { <div class="exito"><p>{{ exito }}</p></div> }
+
+    <div class="selector">
+        <label>📋 Seleccionar Orden</label>
+        <select (change)="seleccionarOrden($event)">
+            <option value="" disabled selected>Seleccione una orden...</option>
+            @for (o of ordenes; track o.idOrden) {
+                <option [ngValue]="o">OT-{{ o.idOrden }} — {{ o.marca }} {{ o.modelo }}</option>
+            }
+        </select>
+    </div>
+
+    @if (ordenSeleccionada) {
+        <div class="card">
+            <div class="info">
+                <h3>OT-{{ ordenSeleccionada.idOrden }}</h3>
+                <p>{{ ordenSeleccionada.marca }} {{ ordenSeleccionada.modelo }}</p>
+                <p>{{ ordenSeleccionada.nombreCliente || 'Sin cliente' }}</p>
+            </div>
+
+            <!-- Pipeline -->
+            <div class="pipeline">
+                @for (paso of estados; track paso; let i = $index) {
+                    <div class="paso" [class.activo]="estadoActual === paso" [class.completado]="indiceEstado > i">
+                        <div class="punto"></div>
+                        <span>{{ paso }}</span>
+                    </div>
+                }
+            </div>
+
+            <div class="acciones-estado">
+                @if (estadoActual !== 'Listo para entrega') {
+                    <button class="btn-avanzar" (click)="avanzarEstado()" [disabled]="procesando">
+                        ▶ {{ siguienteEstado }}
+                    </button>
+                }
+                @if (indiceEstado > 0) {
+                    <button class="btn-retroceder" (click)="retrocederEstado()" [disabled]="procesando">◀ Retroceder</button>
+                }
+                @if (estadoActual === 'Listo para entrega') {
+                    <div class="listo-badge">✅ Listo para entrega</div>
+                }
+            </div>
+
+            <!-- Trabajos -->
+            <div class="seccion">
+                <h3>🛠️ Trabajos Realizados</h3>
+                <div class="input-row">
+                    <input [(ngModel)]="nuevoTrabajo" placeholder="Ej: Cambio de pantalla..." (keyup.enter)="agregarTrabajo()">
+                    <button class="btn-add" (click)="agregarTrabajo()">+</button>
+                </div>
+                @for (t of trabajosRealizados; track $index) {
+                    <div class="tag">{{ t }} <button (click)="quitarTrabajo($index)">✕</button></div>
+                }
+            </div>
+
+            <!-- Repuestos -->
+            <div class="seccion">
+                <h3>🔩 Repuestos Utilizados</h3>
+                <div class="input-row">
+                    <input [(ngModel)]="nuevoRepuesto.nombre" placeholder="Nombre">
+                    <input [(ngModel)]="nuevoRepuesto.cantidad" type="number" placeholder="Cant." min="1" style="width:70px">
+                    <input [(ngModel)]="nuevoRepuesto.precio" type="number" placeholder="Precio" min="0" step="0.01" style="width:100px">
+                    <button class="btn-add" (click)="agregarRepuesto()">+</button>
+                </div>
+                @if (ordenSeleccionada.repuestos && ordenSeleccionada.repuestos.length > 0) {
+                    <div class="repuestos-list">
+                        @for (r of ordenSeleccionada.repuestos; track $index) {
+                            <div class="repuesto-item">
+                                <span>{{ r.nombre }} x{{ r.cantidad }} — S/ {{ r.precio.toFixed(2) }}</span>
+                                <button (click)="quitarRepuesto($index)">✕</button>
+                            </div>
+                        }
+                        <div class="total-repuestos">Total: {{ formatearMonto(totalRepuestos) }}</div>
+                    </div>
+                }
+            </div>
+
+            <!-- Notas -->
+            <div class="seccion">
+                <h3>📝 Notas</h3>
+                <textarea [(ngModel)]="notas" rows="3" placeholder="Observaciones..."></textarea>
+            </div>
+
+            <button class="btn-guardar" (click)="guardarCambios()" [disabled]="procesando">
+                💾 Guardar Cambios
+            </button>
+        </div>
+    }
+</div>

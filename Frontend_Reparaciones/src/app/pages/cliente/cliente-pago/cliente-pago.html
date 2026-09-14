@@ -1,0 +1,165 @@
+<div class="pagos-page">
+    <div class="header">
+        <div>
+            <h1>💳 Pagos</h1>
+            <p>Gestiona el pago de tus servicios de reparación</p>
+        </div>
+        <div class="pestanas">
+            <button [class.activo]="pestanaActiva === 'pendientes'" (click)="cambiarPestana('pendientes')">📋 Pendientes</button>
+            <button [class.activo]="pestanaActiva === 'historial'" (click)="cambiarPestana('historial')">📜 Historial</button>
+        </div>
+    </div>
+
+    @if (pagosPendientes.length > 0 && pestanaActiva === 'pendientes') {
+        <div class="resumen-card">
+            <span>Total pendiente</span>
+            <strong>{{ formatearMonto(totalPendiente) }}</strong>
+        </div>
+    }
+
+    @if (cargando) { <div class="loading">⏳ Cargando...</div> }
+    @if (error && !cargando) { <div class="alerta-error">⚠️ {{ error }}</div> }
+    @if (exito && !cargando) { <div class="alerta-exito">✅ {{ exito }}</div> }
+
+    <div class="pagos-lista">
+        @for (pago of (pestanaActiva === 'pendientes' ? pagosPendientes : pagosHistorial); track pago.id) {
+            <div class="pago-item" [class.pagado]="pago.estado !== 'Pendiente'" (click)="pago.estado === 'Pendiente' && seleccionarPago(pago)">
+                <div class="pago-info">
+                    <span class="ticket-badge">{{ pago.ticket }}</span>
+                    <div>
+                        <p>{{ pago.descripcion }}</p>
+                        <small>{{ pago.equipo || '' }}</small>
+                    </div>
+                </div>
+                <div class="pago-derecha">
+                    <strong>{{ formatearMonto(pago.monto) }}</strong>
+                    <span class="estado" [class.pendiente]="pago.estado === 'Pendiente'" [class.terminado]="pago.estado !== 'Pendiente'">
+                        {{ pago.estado }}
+                    </span>
+                </div>
+            </div>
+        }
+        @empty { 
+            <div class="vacio">📭 No hay pagos {{ pestanaActiva === 'pendientes' ? 'pendientes' : 'en el historial' }}</div> 
+        }
+    </div>
+
+    @if (pagoSeleccionado) {
+        <div class="modal-overlay" (click)="cerrarModal()">
+            <div class="modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h2>Realizar pago — {{ pagoSeleccionado.ticket }}</h2>
+                    <button class="btn-cerrar" (click)="cerrarModal()">✕</button>
+                </div>
+                <p class="monto-modal">{{ formatearMonto(pagoSeleccionado.monto) }}</p>
+
+                <!-- Selector de métodos de pago -->
+                @if (!mostrarQR) {
+                    <div class="metodos">
+                        <button [class.activo]="metodoPago === 'transferencia'" (click)="metodoPago = 'transferencia'">🏦 Transferencia</button>
+                        <button [class.activo]="metodoPago === 'billetera'" (click)="metodoPago = 'billetera'">📱 Billetera</button>
+                    </div>
+                }
+
+                <!-- Transferencia bancaria -->
+                @if (!mostrarQR && metodoPago === 'transferencia') {
+                    <div class="form-pago">
+                        <div class="datos-transferencia">
+                            <h4>🏦 Datos para transferencia</h4>
+                            <div class="banco-info">
+                                <p><strong>Banco:</strong> BCP</p>
+                                <p><strong>Cuenta:</strong> 194-1234567-0-89</p>
+                                <p><strong>Titular:</strong> ZolutionsTic SAC</p>
+                                <p><strong>CCI:</strong> 00219400123456708910</p>
+                            </div>
+                        </div>
+                        <label>Banco desde el que transfiere</label>
+                        <select [(ngModel)]="datosTransferencia.banco">
+                            <option value="">Selecciona banco</option>
+                            <option value="bcp">BCP</option>
+                            <option value="interbank">Interbank</option>
+                            <option value="bbva">BBVA</option>
+                            <option value="scotiabank">Scotiabank</option>
+                        </select>
+                        
+                        <label>N° de operación</label>
+                        <input type="text" placeholder="Ej: 12345678" [(ngModel)]="datosTransferencia.operacion">
+                        
+                        <label class="file-label">
+                            📎 Adjuntar comprobante
+                            <input type="file" (change)="onFileSelected($event, 'transferencia')" accept="image/*,.pdf" hidden>
+                        </label>
+                        
+                        @if (datosTransferencia.comprobante) {
+                            <span class="file-name">{{ datosTransferencia.comprobante.name }}</span>
+                        }
+                        
+                        <button class="btn-pagar" (click)="procesarPago()" [disabled]="procesando">
+                            {{ procesando ? '⏳ Procesando...' : '📤 Confirmar transferencia' }}
+                        </button>
+                    </div>
+                }
+
+                <!-- Billetera digital -->
+                @if (!mostrarQR && metodoPago === 'billetera') {
+                    <div class="form-pago">
+                        <div class="billeteras">
+                            <button [class.activo]="datosBilletera.tipo === 'yape'" (click)="datosBilletera.tipo = 'yape'">📱 Yape</button>
+                            <button [class.activo]="datosBilletera.tipo === 'plin'" (click)="datosBilletera.tipo = 'plin'">📱 Plin</button>
+                        </div>
+                        <button class="btn-ver-qr" (click)="mostrarQR = true">📷 Ver QR para escanear</button>
+                        <button class="btn-pagar" (click)="procesarPago()" [disabled]="procesando">
+                            {{ procesando ? '⏳ Procesando...' : '📤 Confirmar pago' }}
+                        </button>
+                    </div>
+                }
+
+                <!-- QR de billetera -->
+                @if (mostrarQR) {
+                    <div class="qr-section">
+                        <button class="btn-volver" (click)="mostrarQR = false">← Volver</button>
+                        <h4>📱 Escanea con {{ datosBilletera.tipo === 'yape' ? 'Yape' : 'Plin' }}</h4>
+                        
+                        <div class="qr-container">
+                            <!-- NOTA: Asegúrate de tener estas imágenes dentro de src/assets/imagenes/ -->
+                            @if (datosBilletera.tipo === 'yape') {
+                                <img src="assets/imagenes/qr-yape.png" alt="QR Yape" class="qr-imagen">
+                            } @else {
+                                <img src="assets/imagenes/qr-plin.png" alt="QR Plin" class="qr-imagen">
+                            }
+                        </div>
+                        
+                        <p class="qr-monto">Monto a pagar: <strong>{{ formatearMonto(pagoSeleccionado.monto) }}</strong></p>
+                        
+                        <div class="qr-instrucciones">
+                            <p>📱 1. Abre tu app {{ datosBilletera.tipo === 'yape' ? 'Yape' : 'Plin' }}</p>
+                            <p>📷 2. Escanea el código QR</p>
+                            <p>💰 3. Ingresa el monto: <strong>{{ formatearMonto(pagoSeleccionado.monto) }}</strong></p>
+                            <p>✅ 4. Confirma el pago</p>
+                        </div>
+
+                        <label>Número de teléfono (opcional)</label>
+                        <input type="tel" placeholder="Ej: 987654321" [(ngModel)]="datosBilletera.telefono">
+                        
+                        <label class="file-label">
+                            📎 Adjuntar comprobante de pago
+                            <input type="file" (change)="onFileSelected($event, 'billetera')" accept="image/*,.pdf" hidden>
+                        </label>
+                        
+                        @if (datosBilletera.comprobante) {
+                            <span class="file-name">✅ {{ datosBilletera.comprobante.name }}</span>
+                        }
+                        
+                        <button class="btn-pagar" (click)="procesarPago()" [disabled]="procesando">
+                            {{ procesando ? '⏳ Validando...' : '✅ Ya realicé el pago' }}
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (pagoExitoso) { 
+        <div class="toast-exito" (click)="pagoExitoso = false">✅ ¡Pago realizado exitosamente!</div> 
+    }
+</div>

@@ -1,0 +1,97 @@
+<div class="rep-page">
+    <div class="header">
+        <div><h1>🔧 Reparaciones</h1><p>Órdenes con cotización aprobada para reparar</p></div>
+        <div class="header-stats">
+            <button class="stat-badge" [class.activo]="filtroActivo === 'todas'" (click)="filtrarPorEstado('todas')">📋 {{ reparaciones.length }} órdenes</button>
+            <button class="stat-badge" [class.activo]="filtroActivo === 'en-proceso'" (click)="filtrarPorEstado('en-proceso')">⚙️ {{ reparaciones.filter(r => r.estado !== 'Listo para entrega').length }} en proceso</button>
+            <button class="stat-badge" [class.activo]="filtroActivo === 'listas'" (click)="filtrarPorEstado('listas')">✅ {{ reparaciones.filter(r => r.estado === 'Listo para entrega').length }} listas</button>
+        </div>
+        <button class="btn-recargar" (click)="recargarDatos()" [disabled]="cargando">🔄 Actualizar</button>
+    </div>
+
+    @if (cargando) { <div class="loading"><div class="spinner"></div><p>Cargando...</p></div> }
+    @if (error && !cargando) { <div class="alerta-error">⚠️ {{ error }}</div> }
+    @if (exito && !cargando) { <div class="alerta-exito">✅ {{ exito }}</div> }
+
+    @if (!cargando && reparaciones.length === 0) { <div class="sin-resultados"><span class="icono">📭</span><p>No tienes órdenes aprobadas para reparar</p></div> }
+
+    @if (!cargando && reparaciones.length > 0) {
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Ticket</th><th>Cliente</th><th>Equipo</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
+                <tbody>
+                    @for (r of reparacionesFiltradas; track r.id) {
+                        <tr>
+                            <td><strong>{{ r.ticket }}</strong></td><td>{{ r.cliente }}</td><td>{{ r.equipo }}</td><td>{{ r.fechaIngreso || 'Sin fecha' }}</td>
+                            <td><span class="estado-badge" [ngClass]="'estado-' + ((r.estado || '').toLowerCase().replace(/ /g, '-'))">{{ r.estado || 'Pendiente' }}</span></td>
+                            <td><button class="btn-reparar" (click)="seleccionarOrden(r)">🔧 Reparar</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (ordenSeleccionada) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+        <div class="modal-reparacion" (click)="$event.stopPropagation()">
+            <div class="modal-header"><h2>🔧 {{ ordenSeleccionada.ticket }}</h2><button class="btn-close" (click)="cerrarModal()">✕</button></div>
+            <div class="modal-body">
+                <div class="modal-info"><p><strong>Equipo:</strong> {{ ordenSeleccionada.equipo }}</p><p><strong>Cliente:</strong> {{ ordenSeleccionada.cliente }}</p></div>
+                <div class="pipeline-mini">
+                    @for (paso of estados; track paso; let i = $index) {
+                        <div class="paso-mini" [class.activo]="ordenSeleccionada.estado === paso" [class.completado]="estados.indexOf(ordenSeleccionada.estado) > i"><div class="punto"></div><span>{{ paso }}</span></div>
+                    }
+                </div>
+                @if (ordenSeleccionada.puedePagar) { <div class="pago-info">💰 Pago habilitado</div> }
+                <div class="seccion">
+                    <h3>🛠️ Trabajos</h3>
+                    <div class="add-row"><input [(ngModel)]="nuevoTrabajo" placeholder="Ej: Cambio de pantalla..." (keyup.enter)="agregarTrabajo()"><button class="btn-add" (click)="agregarTrabajo()">+</button></div>
+                    @if (ordenSeleccionada.trabajosRealizados?.length) {
+                        <div class="trabajos-lista">@for (t of ordenSeleccionada.trabajosRealizados; track $index) { <div class="trabajo-tag"><span>{{ t }}</span><button class="btn-quitar" (click)="quitarTrabajo($index)">✕</button></div> }</div>
+                    }
+                </div>
+                <div class="seccion">
+                    <div class="seccion-header"><h3>🔩 Repuestos</h3><button class="btn-agregar-repuesto" (click)="abrirModalRepuesto()">+ Agregar</button></div>
+                    @if (ordenSeleccionada.repuestos?.length) {
+                        <table class="tabla-items">
+                            <thead><tr><th>Repuesto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th></th></tr></thead>
+                            <tbody>@for (rep of ordenSeleccionada.repuestos; track $index) { <tr><td>{{ rep.nombre }}</td><td>{{ rep.cantidad }}</td><td>S/ {{ rep.precio.toFixed(2) }}</td><td>S/ {{ (rep.cantidad * rep.precio).toFixed(2) }}</td><td><button class="btn-quitar" (click)="quitarRepuesto($index)">✕</button></td></tr> }</tbody>
+                        </table>
+                        <div class="subtotal-seccion">Total: <strong>S/ {{ calcularTotalRepuestos().toFixed(2) }}</strong></div>
+                    }
+                </div>
+                <div class="seccion"><h3>📝 Notas</h3><textarea [(ngModel)]="ordenSeleccionada.notas" rows="2" placeholder="Observaciones..."></textarea></div>
+                @if (error && !exito) { <div class="alerta-error">⚠️ {{ error }}</div> }
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                <button class="btn-guardar" (click)="guardarCambios()" [disabled]="procesando">💾 Guardar y Avanzar</button>
+                @if (ordenSeleccionada.estado === 'Listo para entrega' && !ordenSeleccionada.puedePagar) {
+                    <button class="btn-pago" (click)="habilitarPago()" [disabled]="procesando">💳 Habilitar Pago</button>
+                }
+                @if (ordenSeleccionada.puedePagar) { <div class="listo-badge">🎉 Listo para entrega</div> }
+            </div>
+        </div>
+    </div>
+}
+
+@if (mostrarModalRepuesto) {
+    <div class="modal-overlay" (click)="cerrarModalRepuesto()">
+        <div class="modal-repuesto" (click)="$event.stopPropagation()">
+            <div class="modal-header"><h3>🔩 Agregar Repuesto</h3><button class="btn-cerrar" (click)="cerrarModalRepuesto()">✕</button></div>
+            <div class="modal-body">
+                <div class="form-grupo"><label>Nombre</label><input type="text" [(ngModel)]="nuevoRepuesto.nombre" placeholder="Ej: Pantalla LCD"></div>
+                <div class="form-fila">
+                    <div class="form-grupo"><label>Cantidad</label><input type="number" [(ngModel)]="nuevoRepuesto.cantidad" min="1" placeholder="1"></div>
+                    <div class="form-grupo"><label>Precio (S/)</label><input type="number" [(ngModel)]="nuevoRepuesto.precio" min="0" step="0.01" placeholder="0.00"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" (click)="cerrarModalRepuesto()">Cancelar</button>
+                <button class="btn-guardar-modal" (click)="agregarRepuesto()">✅ Agregar</button>
+            </div>
+        </div>
+    </div>
+}

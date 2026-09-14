@@ -1,0 +1,209 @@
+/* ============================================
+   ESTILOS GENERALES Y LAYOUT TÉCNICO
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tecnico-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Contenido Principal */
+.main-content {
+    flex: 1;
+    margin-left: 240px; /* Ajustado para dar espacio al sidebar fijo */
+    width: calc(100% - 240px);
+    min-height: 100vh;
+    padding: 25px;
+    background: #f5f7fb; /* Fondo idéntico al cliente/admin */
+}
+
+/* ============================================
+   SIDEBAR (Panel Lateral)
+   ============================================ */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #0a0f1a; /* Oscuro profundo */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px 12px;
+    z-index: 100;
+    
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+    border-right: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Personalización de la Scrollbar del Sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #1a1f2e;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #bac1cd;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #60a5fa;
+}
+
+/* ============================================
+   LOGO DEL SIDEBAR
+   ============================================ */
+.logo {
+    text-align: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo h2 {
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.logo p {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+/* ============================================
+   PERFIL DE USUARIO (TÉCNICO)
+   ============================================ */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border-top: none;
+}
+
+.user-info img {
+    width: 50px; /* Tamaño intermedio y estético */
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #3b82f6;
+    margin-bottom: 8px;
+}
+
+.user-info span {
+    display: block;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.user-info p {
+    color: #9ca3af;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+/* ============================================
+   MENÚ DE NAVEGACIÓN
+   ============================================ */
+.nav-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    list-style: none;
+}
+
+.nav-menu a {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    color: #9ca3af;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+/* Efecto Hover (Desplazamiento horizontal) */
+.nav-menu a:hover {
+    background: #1a253b;
+    color: #ffffff;
+    transform: translateX(4px);
+}
+
+/* Estado Activo con Degradado Azul y Sombra */
+.nav-menu a.active,
+.nav-menu a.router-link-active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.icono {
+    min-width: 24px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* ============================================
+   BOTÓN DE LOGOUT
+   ============================================ */
+.sidebar-footer {
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.btn-logout {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border: none;
+    color: white;
+    background: linear-gradient(135deg, #dc2626, #b91c1c); /* Degradado rojo */
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-2px); /* Pequeño levante visual */
+}

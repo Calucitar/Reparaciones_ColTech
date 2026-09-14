@@ -1,0 +1,519 @@
+/* ============================================================
+   RESET Y BASE
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+.contenedor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a1929 0%, #1a365d 50%, #0d2137 100%);
+  padding: 20px;
+}
+
+.login-box {
+  background: #ffffff;
+  padding: 40px 32px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  width: 440px;
+  max-width: 100%;
+}
+
+/* ============================================================
+   HEADER DEL LOGIN
+   ============================================================ */
+.login-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.logo-icono {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.titulo {
+  color: #0a1929;
+  margin-bottom: 4px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.subtitulo {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+.alerta-exito {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #86efac;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  animation: slideDown 0.3s ease;
+}
+
+.alerta-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  animation: shakeError 0.4s ease;
+}
+
+.alerta-error.alerta-temporal {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.alerta-error.alerta-permanente {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 2px solid #dc2626;
+  font-weight: 600;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ============================================================
+   INTENTOS RESTANTES
+   ============================================================ */
+.intentos-restantes {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.intentos-barra {
+  width: 100%;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.intentos-progreso {
+  height: 100%;
+  background: linear-gradient(90deg, #dc2626, #f59e0b, #10b981);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.intentos-restantes strong {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* ============================================================
+   FORMULARIO
+   ============================================================ */
+.login-form {
+  width: 100%;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 13px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  outline: none;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.input-group input::placeholder {
+  color: #94a3b8;
+}
+
+.input-group input:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+}
+
+.input-group input:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.input-readonly {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 6px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-login:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+}
+
+.btn-login:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.spinner-btn {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   OPCIONES Y DIVIDER
+   ============================================================ */
+.opciones {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.opciones a {
+  color: #1e40af;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.opciones a:hover {
+  color: #1e3a8a;
+  text-decoration: underline;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.crear-cuenta {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-crear-cuenta {
+  padding: 14px 30px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.btn-crear-cuenta:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* ============================================================
+   MODALES
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 25, 41, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 32px 28px;
+  border-radius: 20px;
+  width: 440px;
+  max-width: 92%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #475569;
+}
+
+.modal-close:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.modal-icono {
+  font-size: 44px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.modal-content h2 {
+  margin-bottom: 8px;
+  color: #0a1929;
+  font-size: 22px;
+  text-align: center;
+}
+
+.modal-content p {
+  color: #64748b;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.modal-nota {
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  margin-top: 8px !important;
+}
+
+.modal-exito {
+  text-align: center;
+}
+
+.btn-enviar {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.btn-enviar:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.btn-cancelar {
+  width: 100%;
+  padding: 14px;
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+/* ============================================================
+   DNI SEARCH
+   ============================================================ */
+.dni-search {
+  display: flex;
+  gap: 8px;
+}
+
+.dni-search input {
+  flex: 1;
+}
+
+.btn-buscar {
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-buscar:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #1e40af;
+}
+
+.btn-buscar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-reniec {
+  text-align: center;
+  padding: 8px;
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   FORM REGISTRO
+   ============================================================ */
+.form-registro {
+  width: 100%;
+}
+
+.modal-registro {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px 20px;
+  }
+  
+  .modal-content {
+    padding: 24px 18px;
+  }
+  
+  .titulo {
+    font-size: 22px;
+  }
+
+  .btn-login,
+  .btn-enviar,
+  .btn-cancelar,
+  .btn-crear-cuenta {
+    font-size: 14px;
+    padding: 12px;
+  }
+}

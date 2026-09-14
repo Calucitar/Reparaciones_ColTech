@@ -1,0 +1,160 @@
+<div class="contenedor">
+  <div class="login-box">
+
+    <!-- Mensaje de éxito -->
+    @if (cuentaCreada) {
+      <div class="alerta-exito">
+        ✅ ¡Cuenta creada exitosamente! Ya puedes iniciar sesión.
+      </div>
+    }
+
+    <!-- Error login -->
+    @if (errorLogin) {
+      <div class="alerta-error">⚠️ {{ errorLogin }}</div>
+    }
+
+    <h2 class="titulo">Bienvenido a ZolutionsTic</h2>
+    <p class="subtitulo">Ingresa tus credenciales para continuar</p>
+
+    <form (ngSubmit)="iniciarSesion()">
+      <div class="input-group">
+        <label>Usuario</label>
+        <input type="text" placeholder="Correo o usuario" [(ngModel)]="usuario" name="usuario" required>
+      </div>
+      <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" placeholder="Contraseña" [(ngModel)]="contrasena" name="contrasena" required>
+      </div>
+      <button type="submit" class="btn-login" [disabled]="cargando">
+        {{ cargando ? '⏳ Ingresando...' : 'Iniciar sesión' }}
+      </button>
+      <div class="opciones">
+        <a href="#" class="link-btn" (click)="abrirOlvido(); $event.preventDefault()">¿Olvidaste tu contraseña?</a>
+      </div>
+      <div class="divider"></div>
+      <div class="crear-cuenta">
+        <button type="button" class="btn-crear-cuenta" (click)="abrirRegistro()">Crear cuenta nueva</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL OLVIDO CONTRASEÑA -->
+@if (mostrarOlvido) {
+  <div class="modal-overlay" (click)="cerrarOlvido()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarOlvido()">✕</button>
+      
+      @if (!correoEnviado) {
+        <h2>¿Olvidaste tu contraseña?</h2>
+        <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecerla.</p>
+        <form (ngSubmit)="enviarCorreoRecuperacion()">
+          <div class="input-group">
+            <label>Correo Electrónico</label>
+            <input type="email" placeholder="ejemplo@correo.com" [(ngModel)]="correoRecuperacion" name="correoRecuperacion" required>
+          </div>
+          <button type="submit" class="btn-enviar" [disabled]="enviandoCorreo">
+            {{ enviandoCorreo ? 'Enviando...' : 'Enviar Enlace' }}
+          </button>
+          <button type="button" class="btn-cancelar" (click)="cerrarOlvido()">Cancelar</button>
+        </form>
+      } @else {
+        <div style="text-align:center">
+          <h2>✅ ¡Correo Enviado!</h2>
+          <p>Hemos enviado un enlace a <strong>{{ correoRecuperacion }}</strong></p>
+          <p style="font-size:12px;color:#888;">Revisa tu bandeja de entrada y spam.</p>
+          <button type="button" class="btn-enviar" (click)="cerrarOlvido()">Aceptar</button>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- MODAL REGISTRO -->
+@if (mostrarRegistro) {
+  <div class="modal-overlay" (click)="cerrarRegistro()">
+    <div class="modal-content modal-registro" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="cerrarRegistro()">✕</button>
+      <h2>Registrar Cliente</h2>
+      <p>Completa tus datos para crear una cuenta de cliente</p>
+      
+      <form (ngSubmit)="registrarUsuario()">
+        <!-- DNI con botón buscar -->
+        <div class="input-group">
+          <label>DNI</label>
+          <div class="dni-search">
+            <input type="text" placeholder="Ingrese DNI" [(ngModel)]="dni" name="dni" maxlength="8" (input)="onDniChange()" required>
+            <button type="button" class="btn-buscar" (click)="buscarDniReniec()" [disabled]="buscandoDni">
+              {{ buscandoDni ? '⏳' : '🔍' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading RENIEC -->
+        @if (buscandoDni) {
+          <div class="loading-reniec">⏳ Consultando RENIEC...</div>
+        }
+
+        <!-- NOMBRES -->
+        <div class="input-group">
+          <label>Nombres</label>
+          <input 
+            type="text" 
+            placeholder="Nombres" 
+            [(ngModel)]="nombres" 
+            name="nombres" 
+            [readonly]="nombres !== ''"
+            [class.input-readonly]="nombres !== ''"
+            required>
+        </div>
+
+        <!-- APELLIDOS -->
+        <div class="input-group">
+          <label>Apellidos</label>
+          <input 
+            type="text" 
+            placeholder="Apellidos" 
+            [(ngModel)]="apellidos" 
+            name="apellidos" 
+            [readonly]="apellidos !== ''"
+            [class.input-readonly]="apellidos !== ''"
+            required>
+        </div>
+
+        <div class="input-group">
+          <label>Correo Electrónico</label>
+          <input type="email" placeholder="ejemplo@correo.com" [(ngModel)]="correo" name="correo" required>
+        </div>
+
+        <div class="input-group">
+          <label>Teléfono</label>
+          <input type="tel" placeholder="987654321" [(ngModel)]="telefono" name="telefono" required>
+        </div>
+
+        <div class="input-group">
+          <label>Fecha de Nacimiento</label>
+          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [readonly]="fechaNacimiento !== ''">
+        </div>
+
+        <div class="input-group">
+          <label>Contraseña</label>
+          <input type="password" placeholder="Cree una contraseña" [(ngModel)]="contrasenaRegistro" name="contrasenaRegistro" required>
+        </div>
+
+        <div class="input-group">
+          <label>Confirmar Contraseña</label>
+          <input type="password" placeholder="Repita la contraseña" [(ngModel)]="confirmarContrasena" name="confirmarContrasena" required>
+        </div>
+
+        @if (errorRegistro) {
+          <div class="alerta-error">⚠️ {{ errorRegistro }}</div>
+        }
+
+        <button type="submit" class="btn-enviar" [disabled]="registrando || buscandoDni">
+          {{ registrando ? '⏳ Registrando...' : '📤 Crear Cuenta' }}
+        </button>
+        <button type="button" class="btn-cancelar" (click)="cerrarRegistro()">Cancelar</button>
+      </form>
+    </div>
+  </div>
+}

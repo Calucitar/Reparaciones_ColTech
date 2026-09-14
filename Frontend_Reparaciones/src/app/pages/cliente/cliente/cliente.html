@@ -1,0 +1,178 @@
+<div class="perfil-page">
+
+  <div class="header">
+    <div>
+      <h1>👤 Mi perfil</h1>
+      <p>Visualiza y actualiza tu información personal</p>
+    </div>
+  </div>
+
+  <!-- DEBUG -->
+  <div style="background:#fef3c7; padding:10px; margin-bottom:10px; border-radius:8px; font-size:12px;">
+    🔍 idPersona: {{ perfil.idPersona || 'NO ENCONTRADO' }} | 
+    Nombre: {{ perfil.nombre || 'SIN DATOS' }} |
+    Cargando: {{ cargando }}
+  </div>
+
+  <!-- Mensaje de éxito -->
+  @if (guardado) {
+    <div class="alerta-exito">✅ Perfil actualizado correctamente</div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (error) {
+    <div class="alerta-error">⚠️ {{ error }}</div>
+  }
+
+  <!-- Loading -->
+  @if (cargando) {
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <p>Cargando perfil...</p>
+    </div>
+  } @else {
+    <div class="perfil-card">
+
+      <!-- Avatar con iniciales -->
+      <div class="avatar">
+        <span>{{ iniciales }}</span>
+      </div>
+
+      <!-- Datos del perfil -->
+      <div class="form-grid">
+
+        <!-- NOMBRE -->
+        <div class="form-grupo">
+          <label>Nombre</label>
+          <input type="text" [value]="perfil.nombre" disabled class="input-readonly">
+          <small class="text-muted">No editable</small>
+        </div>
+
+        <!-- APELLIDO -->
+        <div class="form-grupo">
+          <label>Apellido</label>
+          <input type="text" [value]="perfil.apellido" disabled class="input-readonly">
+          <small class="text-muted">No editable</small>
+        </div>
+
+        <!-- DNI -->
+        <div class="form-grupo">
+          <label>DNI</label>
+          <input type="text" [value]="perfil.dni" disabled class="input-readonly">
+          <small class="text-muted">No editable</small>
+        </div>
+
+        <!-- TELÉFONO -->
+        <div class="form-grupo">
+          <label>Teléfono *</label>
+          <input
+            type="tel"
+            [(ngModel)]="perfil.telefono"
+            [disabled]="!editando"
+            [class.input-editable]="editando"
+            [class.input-readonly]="!editando"
+            placeholder="987654321"
+            maxlength="9"
+            (input)="validarTelefono()"
+            name="telefono">
+          @if (editando) {
+            <small class="text-info">Ingresa 9 dígitos</small>
+          }
+        </div>
+
+        <!-- CORREO -->
+        <div class="form-grupo">
+          <label>Correo electrónico *</label>
+          <input
+            type="email"
+            [(ngModel)]="perfil.correo"
+            [disabled]="!editando"
+            [class.input-editable]="editando"
+            [class.input-readonly]="!editando"
+            placeholder="correo@ejemplo.com"
+            (input)="validarCorreo()"
+            name="correo">
+          @if (editando) {
+            <small class="text-info">Ejemplo: nombre&#64;dominio.com</small>
+          }
+        </div>
+
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="acciones-perfil">
+        @if (!editando) {
+          <button class="btn-mfa" (click)="iniciarConfiguracionMFA()">
+            🔒 Vincular Authenticator
+          </button>
+          <button class="btn-editar-perfil" (click)="habilitarEdicion()">
+            ✏️ Editar perfil
+          </button>
+        } @else {
+          <button class="btn-guardar" (click)="guardar()">
+            💾 Guardar cambios
+          </button>
+          <button class="btn-cancelar" (click)="cancelar()">
+            ❌ Cancelar
+          </button>
+        }
+      </div>
+
+    </div>
+  }
+</div>
+
+<!-- Modal MFA -->
+@if (mostrarModalMFA) {
+  <div class="modal-overlay" (click)="cerrarModalMFA()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h3 class="modal-titulo">🔐 Configurar Autenticador</h3>
+        <button class="modal-close" (click)="cerrarModalMFA()">×</button>
+      </div>
+
+      @if (error) {
+        <div class="alerta-error modal-error">⚠️ {{ error }}</div>
+      }
+
+      <div class="modal-body">
+        <p class="modal-subtitulo">
+          Abre tu aplicación de autenticación y selecciona <strong>"Ingresar clave de configuración"</strong>.
+        </p>
+        
+        <div class="caja-secreta">
+          <div class="secreto-item">
+            <span class="secreto-label">Cuenta:</span>
+            <strong>ZolutionsTic</strong>
+          </div>
+          <div class="secreto-item">
+            <span class="secreto-label">Tu llave secreta:</span>
+            <h2 class="texto-resaltado">{{ secretoMFA }}</h2>
+          </div>
+          <button class="btn-copiar" (click)="copiarSecreto()">📋 Copiar clave</button>
+        </div>
+
+        <div class="form-grupo input-modal">
+          <label>Código de verificación (6 dígitos):</label>
+          <input type="text" placeholder="123456" [(ngModel)]="codigoVerificacion" maxlength="6"
+            (input)="validarCodigoVerificacion()" name="codigoMFA" autocomplete="off">
+          <small class="text-info">Ingresa el código que aparece en tu aplicación</small>
+        </div>
+      </div>
+
+      <div class="botones-modal">
+        <button type="button" class="btn-guardar btn-full" (click)="confirmarConfiguracionMFA()"
+          [disabled]="codigoVerificacion.length !== 6">✅ Verificar y Activar</button>
+        <button type="button" class="btn-cancelar btn-full" (click)="cerrarModalMFA()">Cancelar</button>
+      </div>
+
+      @if (mfaActivado) {
+        <div class="mfa-activo-info">
+          <p>✅ La autenticación en dos pasos está activada</p>
+          <button class="btn-desactivar" (click)="desactivarMFA()">🔓 Desactivar</button>
+        </div>
+      }
+    </div>
+  </div>
+}

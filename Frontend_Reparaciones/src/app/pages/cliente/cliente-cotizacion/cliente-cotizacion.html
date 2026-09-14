@@ -1,0 +1,134 @@
+<div class="page">
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>💰 Mis Cotizaciones</h1>
+            <p>Revisa y acepta las cotizaciones de tus equipos</p>
+        </div>
+        <button class="btn-recargar" (click)="recargar()">🔄 Actualizar</button>
+    </div>
+
+    <!-- LOADING -->
+    @if (cargando) {
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando cotizaciones...</p>
+        </div>
+    }
+
+    <!-- ERROR -->
+    @if (error && !cargando) {
+        <div class="alerta error">
+            <span class="alerta-icono">⚠️</span>
+            <span>{{ error }}</span>
+        </div>
+    }
+
+    <!-- ÉXITO -->
+    @if (exito && !cargando) {
+        <div class="alerta exito">
+            <span class="alerta-icono">✅</span>
+            <span>{{ exito }}</span>
+        </div>
+    }
+
+    <!-- VACÍO -->
+    @if (!cargando && cotizaciones.length === 0) {
+        <div class="vacio">
+            <span class="vacio-icono">📋</span>
+            <p>No tienes cotizaciones pendientes</p>
+            <p class="vacio-sub">Cuando un técnico genere una cotización para tu equipo, aparecerá aquí</p>
+        </div>
+    }
+
+    <!-- LISTA DE COTIZACIONES -->
+    @if (!cargando && cotizaciones.length > 0) {
+        <div class="cot-list">
+            @for (c of cotizaciones; track c.idCotizacion) {
+                <div class="cot-card" [class.pendiente]="c.estado === 'PENDIENTE' || c.estado === 'COTIZACION_ENVIADA'"
+                     [class.aprobada]="c.estado === 'APROBADA' || c.estado === 'COTIZACION_APROBADA'"
+                     [class.rechazada]="c.estado === 'RECHAZADA' || c.estado === 'COTIZACION_RECHAZADA'">
+                    
+                    <!-- Cabecera -->
+                    <div class="cot-header">
+                        <div class="cot-ticket">
+                            <span class="ticket-label">{{ c.ticket }}</span>
+                            <span class="cot-id">Cotización #{{ c.idCotizacion }}</span>
+                        </div>
+                        <span class="estado-badge" [class.pendiente]="c.estado === 'PENDIENTE' || c.estado === 'COTIZACION_ENVIADA'"
+                              [class.aprobado]="c.estado === 'APROBADA' || c.estado === 'COTIZACION_APROBADA'"
+                              [class.rechazado]="c.estado === 'RECHAZADA' || c.estado === 'COTIZACION_RECHAZADA'">
+                            @if (c.estado === 'PENDIENTE' || c.estado === 'COTIZACION_ENVIADA') {
+                                ⏳ Pendiente
+                            } @else if (c.estado === 'APROBADA' || c.estado === 'COTIZACION_APROBADA') {
+                                ✅ Aprobada
+                            } @else if (c.estado === 'RECHAZADA' || c.estado === 'COTIZACION_RECHAZADA') {
+                                ❌ Rechazada
+                            } @else {
+                                {{ c.estado }}
+                            }
+                        </span>
+                    </div>
+
+                    <!-- Información -->
+                    <div class="cot-info">
+                        <div class="info-row">
+                            <span class="info-label">Equipo</span>
+                            <span class="info-value">{{ c.equipo || 'Sin especificar' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Fecha</span>
+                            <span class="info-value">{{ formatearFecha(c.fecha) }}</span>
+                        </div>
+                        @if (c.descripcion) {
+                            <div class="info-row">
+                                <span class="info-label">Diagnóstico</span>
+                                <span class="info-value descripcion">{{ c.descripcion }}</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Totales -->
+                    <div class="cot-totales">
+                        <div class="total-row">
+                            <span>Repuestos</span>
+                            <span>{{ formatearMonto(c.totalRepuestos) }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Mano de obra</span>
+                            <span>{{ formatearMonto(c.manoObra) }}</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <span>TOTAL</span>
+                            <span>{{ formatearMonto(c.total) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    @if (c.estado === 'PENDIENTE' || c.estado === 'COTIZACION_ENVIADA') {
+                        <div class="cot-acciones">
+                            <button class="btn-accion btn-aceptar" (click)="aceptar(c.idCotizacion)">
+                                ✅ Aceptar Cotización
+                            </button>
+                            <button class="btn-accion btn-rechazar" (click)="rechazar(c.idCotizacion)">
+                                ❌ Rechazar Cotización
+                            </button>
+                        </div>
+                    }
+
+                    <!-- Mensaje post-acción -->
+                    @if (c.estado === 'APROBADA' || c.estado === 'COTIZACION_APROBADA') {
+                        <div class="cot-mensaje aprobado">
+                            ✅ Has aceptado esta cotización. El técnico iniciará la reparación.
+                        </div>
+                    }
+                    @if (c.estado === 'RECHAZADA' || c.estado === 'COTIZACION_RECHAZADA') {
+                        <div class="cot-mensaje rechazado">
+                            ❌ Has rechazado esta cotización. Se coordinará la devolución del equipo.
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>

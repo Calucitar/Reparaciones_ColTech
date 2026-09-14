@@ -1,0 +1,256 @@
+    <div class="cot-page">
+        
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>💰 Gestión de Cotizaciones</h1>
+                <p>Visualiza y supervisa las cotizaciones realizadas por los técnicos</p>
+            </div>
+            <button class="btn-recargar" (click)="recargar()">🔄 Actualizar</button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-valor">{{ totalCotizaciones }}</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-card pendiente">
+                <span class="stat-valor">{{ totalPendientes }}</span>
+                <span class="stat-label">Pendientes</span>
+            </div>
+            <div class="stat-card aprobada">
+                <span class="stat-valor">{{ totalAprobadas }}</span>
+                <span class="stat-label">Aprobadas</span>
+            </div>
+            <div class="stat-card rechazada">
+                <span class="stat-valor">{{ totalRechazadas }}</span>
+                <span class="stat-label">Rechazadas</span>
+            </div>
+            <div class="stat-card monto">
+                <span class="stat-valor">{{ formatearMonto(totalMontoAprobado) }}</span>
+                <span class="stat-label">Monto Aprobado</span>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        @if (cargando) {
+            <div class="loading">⏳ Cargando cotizaciones...</div>
+        }
+
+        <!-- Error -->
+        @if (error && !cargando) {
+            <div class="error-box">
+                <p>⚠️ {{ error }}</p>
+                <button (click)="recargar()">Reintentar</button>
+            </div>
+        }
+
+        <!-- Éxito -->
+        @if (exito && !cargando) {
+            <div class="exito-box">
+                <p>✅ {{ exito }}</p>
+            </div>
+        }
+
+        <!-- Filtros -->
+        @if (!cargando) {
+            <div class="filtros">
+                <input type="text" [(ngModel)]="busqueda" (input)="aplicarFiltros()" 
+                    placeholder="🔍 Buscar por OT, cliente, técnico o equipo...">
+                <div class="filtro-botones">
+                    <button [class.activo]="filtroEstado === 'TODOS'" (click)="filtrarPorEstado('TODOS')">Todos</button>
+                    <button [class.activo]="filtroEstado === 'PENDIENTE' || filtroEstado === 'COTIZACION_ENVIADA'" 
+                            (click)="filtrarPorEstado('PENDIENTE')">Pendientes</button>
+                    <button [class.activo]="filtroEstado === 'APROBADA' || filtroEstado === 'COTIZACION_APROBADA'" 
+                            (click)="filtrarPorEstado('APROBADA')">Aprobadas</button>
+                    <button [class.activo]="filtroEstado === 'RECHAZADA' || filtroEstado === 'COTIZACION_RECHAZADA'" 
+                            (click)="filtrarPorEstado('RECHAZADA')">Rechazadas</button>
+                </div>
+            </div>
+        }
+
+        <!-- Tabla -->
+        @if (!cargando && !error && cotizacionesFiltradas.length === 0) {
+            <div class="vacio">
+                <span>📋</span>
+                <p>No se encontraron cotizaciones</p>
+            </div>
+        }
+
+        @if (!cargando && !error && cotizacionesFiltradas.length > 0) {
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cotización</th>
+                            <th>Orden</th>
+                            <th>Cliente</th>
+                            <th>Equipo</th>
+                            <th>Técnico</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (c of cotizacionesFiltradas; track c.idCotizacion) {
+                            <tr>
+                                <td><strong>#{{ c.idCotizacion }}</strong></td>
+                                <td><span class="ot-badge">OT-{{ c.idOrden }}</span></td>
+                                <td>{{ c.nombreCliente || 'Sin cliente' }}</td>
+                                <td>{{ c.equipo || 'Sin equipo' }}</td>
+                                <td>{{ c.nombreTecnico || 'Técnico #' + c.idTecnico }}</td>
+                                <td><strong>{{ formatearMonto(c.total) }}</strong></td>
+                                <td>
+                                    <span class="badge {{ claseEstado(c.estado) }}">
+                                        {{ textoEstado(c.estado) }}
+                                    </span>
+                                </td>
+                                <td>{{ formatearFecha(c.fechaCreacion) }}</td>
+                                <td>
+                                    <button class="btn-ver" (click)="verDetalle(c)">👁️ Ver detalle</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <!-- Modal Detalle -->
+        @if (mostrarDetalle && cotizacionSeleccionada) {
+            <div class="modal-overlay" (click)="cerrarDetalle()">
+                <div class="modal" (click)="$event.stopPropagation()">
+                    <div class="modal-header">
+                        <h2>📄 Cotización #{{ cotizacionSeleccionada.idCotizacion }}</h2>
+                        <button class="btn-cerrar" (click)="cerrarDetalle()">✕</button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <!-- Datos generales -->
+                        <div class="detalle-grid">
+                            <div class="detalle-item">
+                                <span class="detalle-label">Orden</span>
+                                <span class="detalle-valor">OT-{{ cotizacionSeleccionada.idOrden }}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Cliente</span>
+                                <span class="detalle-valor">{{ cotizacionSeleccionada.nombreCliente || 'Sin cliente' }}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Equipo</span>
+                                <span class="detalle-valor">{{ cotizacionSeleccionada.equipo || 'Sin equipo' }}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Técnico</span>
+                                <span class="detalle-valor">{{ cotizacionSeleccionada.nombreTecnico || 'Sin técnico' }}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Estado</span>
+                                <span class="badge {{ claseEstado(cotizacionSeleccionada.estado) }}">
+                                    {{ textoEstado(cotizacionSeleccionada.estado) }}
+                                </span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Fecha Creación</span>
+                                <span class="detalle-valor">{{ formatearFecha(cotizacionSeleccionada.fechaCreacion) }}</span>
+                            </div>
+                            @if (cotizacionSeleccionada.fechaRespuesta) {
+                                <div class="detalle-item">
+                                    <span class="detalle-label">Fecha Respuesta</span>
+                                    <span class="detalle-valor">{{ formatearFecha(cotizacionSeleccionada.fechaRespuesta) }}</span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Repuestos -->
+                        @if (cotizacionSeleccionada.repuestos && cotizacionSeleccionada.repuestos.length > 0) {
+                            <h3 class="seccion-titulo">🔩 Repuestos Cotizados</h3>
+                            <div class="tabla-detalle-wrapper">
+                                <table class="tabla-detalle">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th class="text-center">Cant.</th>
+                                            <th class="text-right">Precio Unit.</th>
+                                            <th class="text-right">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (r of cotizacionSeleccionada.repuestos; track $index) {
+                                            <tr>
+                                                <td>{{ r.nombre }}</td>
+                                                <td class="text-center">{{ r.cantidad }}</td>
+                                                <td class="text-right">{{ formatearMonto(r.precioUnitario) }}</td>
+                                                <td class="text-right">{{ formatearMonto(r.cantidad * r.precioUnitario) }}</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        } @else {
+                            <p class="sin-datos">No hay repuestos registrados</p>
+                        }
+
+                        <!-- Trabajos -->
+                        @if (cotizacionSeleccionada.trabajos && cotizacionSeleccionada.trabajos.length > 0) {
+                            <h3 class="seccion-titulo">🛠️ Trabajos Cotizados</h3>
+                            <div class="tabla-detalle-wrapper">
+                                <table class="tabla-detalle">
+                                    <thead>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <th class="text-right">Costo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (t of cotizacionSeleccionada.trabajos; track $index) {
+                                            <tr>
+                                                <td>{{ t.descripcion }}</td>
+                                                <td class="text-right">{{ formatearMonto(t.costo) }}</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        } @else {
+                            <p class="sin-datos">No hay trabajos registrados</p>
+                        }
+
+                        <!-- Totales -->
+                        <div class="totales-detalle">
+                            <div class="total-linea">
+                                <span>Total Repuestos:</span>
+                                <span>{{ formatearMonto(cotizacionSeleccionada.totalRepuestos || 0) }}</span>
+                            </div>
+                            <div class="total-linea">
+                                <span>Mano de Obra:</span>
+                                <span>{{ formatearMonto(cotizacionSeleccionada.manoObra || 0) }}</span>
+                            </div>
+                            <div class="total-linea total-grande">
+                                <span>TOTAL:</span>
+                                <span>{{ formatearMonto(cotizacionSeleccionada.total || 0) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Notas -->
+                        @if (cotizacionSeleccionada.notas) {
+                            <h3 class="seccion-titulo">📝 Notas</h3>
+                            <div class="notas-box">{{ cotizacionSeleccionada.notas }}</div>
+                        }
+                    </div>
+                    
+                    <!-- Footer del Modal -->
+                    <div class="modal-footer">
+                        <button class="btn-secundario" (click)="cerrarDetalle()">Cerrar</button>
+                        @if (cotizacionSeleccionada.estado === 'PENDIENTE' || cotizacionSeleccionada.estado === 'COTIZACION_ENVIADA') {
+                            <button class="btn-aprobar" (click)="cambiarEstadoCotizacion('APROBADA')">✅ Aprobar</button>
+                            <button class="btn-rechazar" (click)="cambiarEstadoCotizacion('RECHAZADA')">❌ Rechazar</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>

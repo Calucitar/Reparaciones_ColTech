@@ -1,0 +1,170 @@
+/* ============================================
+   ESTILOS GENERALES Y LAYOUT TÉCNICO
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tecnico-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Contenido Principal */
+.main-content {
+    flex: 1;
+    margin-left: 240px; /* Igual que en Cliente */
+    width: calc(100% - 240px);
+    min-height: 100vh;
+    padding: 25px;
+    background: #f5f7fb;
+}
+
+/* ============================================
+   SIDEBAR (Panel Lateral)
+   ============================================ */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #0a0f1a; /* Oscuro profundo idéntico al cliente */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px 12px;
+    z-index: 100;
+    border-right: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   LOGO DEL SIDEBAR
+   ============================================ */
+.logo {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo h2 {
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.logo p {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+/* ============================================
+   PERFIL DE USUARIO (TÉCNICO)
+   ============================================ */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+}
+
+.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid #3b82f6;
+}
+
+.user-info span {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.user-info p {
+    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* ============================================
+   MENÚ DE NAVEGACIÓN
+   ============================================ */
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #9ca3af;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    transition: all 0.25s ease;
+}
+
+/* Efecto Hover idéntico al cliente */
+.nav-menu a:hover {
+    background: #1a253b;
+    color: #ffffff;
+    transform: translateX(4px);
+}
+
+/* Estado Activo con degradado */
+.nav-menu a.active, 
+.nav-menu a.router-link-active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.icon {
+    min-width: 24px;
+    text-align: center;
+}
+
+/* ============================================
+   BOTÓN DE LOGOUT
+   ============================================ */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.btn-logout {
+    width: 100%;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-2px);
+}

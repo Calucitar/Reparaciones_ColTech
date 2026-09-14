@@ -1,0 +1,54 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.ordenes-container {
+  padding: 24px; background: #f8fafc; min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif; max-width: 1200px; margin: 0 auto;
+}
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.header h1 { font-size: 22px; font-weight: 700; color: #0f172a; margin: 0; }
+.header p { font-size: 13px; color: #64748b; margin: 2px 0 0; }
+
+.btn-recargar { padding: 8px 18px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
+.btn-recargar:hover { background: #1d4ed8; }
+.btn-recargar:disabled { background: #94a3b8; cursor: not-allowed; }
+
+.debug-info { background: #fef3c7; padding: 8px 14px; margin-bottom: 16px; border-radius: 8px; font-size: 12px; color: #92400e; font-weight: 500; border: 1px solid #fde68a; }
+
+.alerta-error { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 500; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.alerta-error button { background: none; border: none; cursor: pointer; font-size: 16px; color: inherit; padding: 0 4px; }
+
+.filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.filtros input { flex: 1; min-width: 200px; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 13px; outline: none; transition: border 0.2s; }
+.filtros input:focus { border-color: #2563eb; }
+.filtros select { padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 13px; background: #fff; cursor: pointer; outline: none; min-width: 150px; }
+
+.loading { text-align: center; padding: 80px 20px; color: #64748b; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty { text-align: center; padding: 80px 20px; color: #94a3b8; background: #fff; border-radius: 12px; border: 2px dashed #e2e8f0; }
+.empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+
+.table-responsive { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th { background: #1e293b; color: #fff; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; }
+td { padding: 12px 14px; font-size: 13px; color: #334155; border-bottom: 1px solid #f1f5f9; }
+tbody tr:hover { background: #f8fafc; }
+tbody tr:last-child td { border-bottom: none; }
+
+.equipo-cell { display: flex; flex-direction: column; gap: 2px; }
+.equipo-marca { font-weight: 600; }
+.equipo-modelo { font-size: 11px; color: #64748b; }
+
+.estado { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.estado.pendiente { background: #fef3c7; color: #92400e; }
+.estado.en-proceso { background: #dbeafe; color: #1e40af; }
+.estado.terminado { background: #d1fae5; color: #065f46; }
+
+@media (max-width: 768px) {
+  .ordenes-container { padding: 14px; }
+  .header { flex-direction: column; align-items: flex-start; }
+  .filtros { flex-direction: column; }
+  .filtros input, .filtros select { width: 100%; }
+}

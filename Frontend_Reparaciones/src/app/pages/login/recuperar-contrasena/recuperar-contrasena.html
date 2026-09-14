@@ -1,0 +1,24 @@
+<div class="contenedor">
+  <div class="login-box">
+    <h2>Restablecer Contraseña</h2>
+    <p>Ingresa tu nueva contraseña</p>
+    
+    <form (ngSubmit)="restablecer()">
+      <div class="input-group">
+        <label>Nueva Contraseña</label>
+        <input type="password" [(ngModel)]="contrasena" name="contrasena" required>
+      </div>
+
+      <div class="input-group">
+        <label>Confirmar Contraseña</label>
+        <input type="password" [(ngModel)]="confirmar" name="confirmar" required>
+      </div>
+
+      <button type="submit" class="btn-login">Restablecer Contraseña</button>
+    </form>
+
+    <p class="volver">
+      <a routerLink="/">Volver al inicio</a>
+    </p>
+  </div>
+</div>
